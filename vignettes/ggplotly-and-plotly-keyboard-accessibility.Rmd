@@ -1,0 +1,741 @@
+---
+title: "ggplotly and plotly keyboard accessibility"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ggplotly-and-plotly-keyboard-accessibility}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+```{r, setup}
+library(ROvis.plotly)
+```
+# Introduction
+This vignette demonstrates the use of accessibility functions for interactive `plotly` and `ggplotly` plots.
+These functions are designed to improve keyboard and screen reader accessibility for various types of interactive charts.
+
+Note: The example plots in this vignette are for demonstration only and do not themselves comply with the RIVM huisstijl requirements.
+
+Key Accessibility Features
+
+- Keyboard navigation: Users can focus bars, points, and legend items using Tab and Arrow keys.
+- Accessible tooltips: Tooltip content is made available for screen readers and keyboard navigation.
+- Screen reader support: Meaningful ARIA labels are provided for plot elements.
+- Legend accessibility: Legends can be reached and toggled via keyboard.
+- Toolbar control: The plotly modebar (toolbar) can be disabled for improved accessibility.
+
+The functions covered in this vignette are:
+
+- ro_ply_keyboard_nav_barchart()
+- ro_ply_keyboard_nav_bargraph()
+- ro_ply_keyboard_nav_trendline()
+- ro_ply_keyboard_nav_linechart()
+- ro_ply_keyboard_nav_legend()
+- ro_ply_disable_toolbar()
+
+
+# Keyboard accessibility - ggplotly and plotly plots
+Each section below demonstrates how to add accessibility to a ggplotly or plotly graph using the functions from this package.
+For each plot type, you will see an example with and without accessibility enhancements.
+
+## Horizontal Barchart
+This section demonstrates how to make a horizontal bar chart created with ggplotly or plotly keyboard accessible. The example shows how to use `ro_ply_keyboard_nav_barchart()` to enable keyboard navigation and accessible tooltips for all bars.
+
+### Example data
+```{r example data horizontal barchart}
+data <- tidyr::tibble(
+  expand.grid(`Age group` = c("A", "B", "C", "D", "E"), `Sex` = c("Man", "Vrouw")),
+  `Number of Cases` = sample(1:50, 10, TRUE)
+) 
+```
+
+### ggplotly - Horizontal Barchart
+```{r ggplotly horizontal barchart}
+library(ggplot2)
+library(plotly)
+ 
+p <- ggplot(data, aes(
+  x = `Number of Cases`,
+  y = `Age group`,
+  fill = Sex,
+  text = paste0(
+    "Leeftijdsgroep: <b>", `Age group`, "</b><br>",
+    "Geslacht: <b>", Sex, "</b><br>",
+    "Aantal cases: <b>", `Number of Cases`, "</b>"
+  )
+)) +
+  geom_col(position = "dodge") +
+  labs(
+    x = "Aantal cases",
+    y = "Leeftijdsgroep",
+    fill = "Geslacht"
+  ) 
+
+# Convert to plotly and add accessibility
+fig <- ggplotly(p, tooltip = "text")
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_barchart(fig)
+fig
+```
+
+### plotly - Horizontal Barchart
+```{r plotly horizontal barchart}
+library(plotly)
+ 
+fig <- plot_ly(data = data,
+  x = ~`Number of Cases`,              
+  y = ~`Age group`,                    
+  color = ~`Sex`,          
+  type = "bar",
+  orientation = "h",                   # horizontal bars
+  hovertext  = ~paste0(
+    "Leeftijdsgroep: <b>", `Age group`, "</b><br>",
+    "Geslacht: <b>", `Sex`, "</b><br>",
+    "Aantal cases: <b>", `Number of Cases`, "</b>"
+  ),
+  text  = ~paste0(
+    "Leeftijdsgroep: <b>", `Age group`, "</b><br>",
+    "Geslacht: <b>", `Sex`, "</b><br>",
+    "Aantal cases: <b>", `Number of Cases`, "</b>"
+  ),    
+  textposition = "none",
+  hoverinfo = "text"
+) 
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_barchart(fig)
+fig
+ 
+```
+## Column Chart
+This section demonstrates how to make a column chart created with ggplotly or plotly keyboard accessible. The example shows how to use `ro_ply_keyboard_nav_barchart()` to enable keyboard navigation and accessible tooltips for all bars.
+
+### Example data
+```{r example data column chart}
+age_levels <- c(
+  "0", "1-9", "10-19", "20-29",
+  "30-39", "40-49", "50-59",
+  "60-69", "70-79", "80-89", "90+"
+)
+
+base_data <- tidyr::expand_grid(
+  `Age group` = age_levels,
+  Sex = c("Men", "Women")
+) |>
+  dplyr::mutate(
+    `Number of Cases` = sample(1:50, length(age_levels) * 2, TRUE)
+  )
+
+summary_data <- base_data |>
+  dplyr::summarize(
+    `Number of Cases` = sum(`Number of Cases`),
+    .by = `Age group`
+  ) |>
+  dplyr::mutate(Sex = "Total")
+
+data <- dplyr::bind_rows(base_data, summary_data) |>
+  dplyr::mutate(
+    `Age group` = factor(`Age group`, levels = age_levels),
+    Sex = factor(Sex, levels = c("Men", "Women", "Total"))
+  ) 
+
+```
+### ggplotly Column Chart
+```{r ggplotly column chart}
+p <- ggplot(data, aes(
+  x = `Age group`,
+  y = `Number of Cases`,
+  fill = Sex,
+  text = paste0(
+    "Geslacht: <b>", Sex, "</b>",
+    "<br>Leeftijdsgroep: <b>", `Age group`,
+    "</b><br>Aantal cases: <b>",
+    format(round(`Number of Cases`, 0), big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+  )
+)) +
+  geom_col(position = position_dodge(width = 0.7), width = 0.7) +
+  labs(x = "Leeftijdsgroep", y = "Aantal cases", fill = "Geslacht")
+
+# Convert to interactive plotly plot
+fig <- ggplotly(p, tooltip = "text")
+fig <- ro_ply_keyboard_nav_barchart(fig)
+fig
+```
+### plotly Column Chart
+```{r plotly column chart}
+fig <- plot_ly(
+  data = data,
+  x = ~`Age group`,
+  y = ~`Number of Cases`,
+  type = "bar",
+  color = ~Sex,
+  text = ~paste0(
+    "Geslacht: <b>", Sex, "</b>",
+    "<br>Leeftijdsgroep: <b>", `Age group`,
+    "</b><br>Aantal cases: <b>", 
+    format(round(`Number of Cases`, 0), big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+  ),
+  textposition = "none",
+  hoverinfo = "text"
+) |>
+  layout(barmode = "group")
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_barchart(fig)
+fig
+```
+
+## Bar Graph
+This section demonstrates how to make a bar graph created with ggplotly or plotly keyboard accessible. The example shows how to use `ro_ply_keyboard_nav_barchart()` to enable keyboard navigation and accessible tooltips for all bars.
+
+### Example data
+```{r example data bargrpaph}
+data <- tidyr::tibble(
+  Sex = factor(c("Vrouw", "Man"), levels = c("Vrouw", "Man")),
+  n = sample(1e6:5e6, 2)
+)
+
+```
+### ggplotly Bar Graph
+library(ggplot2)
+library(plotly)
+ 
+```{r ggplotly bar graph}
+p <- ggplot(data, aes(x = Sex, y = n, fill = Sex,
+                      text = paste0(
+                        "Geslacht: <b>", Sex, "</b>",
+                        "</b><br>Aantal cases: <b>",
+                        format(round(n, 0), big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+                      ))) +
+  geom_col(width = 0.6) +
+  labs(x = "Geslacht", y = "Aantal cases") +
+  theme_minimal()
+
+# Convert to plotly and add accessibility
+fig <- ggplotly(p, tooltip = "text")
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_barchart(fig)
+fig
+```
+### plotly Bar Graph
+```{r plotly bar graph}
+fig <- plot_ly(
+  data = data,
+  x = ~Sex,
+  y = ~n,
+  type = "bar",
+  color = ~Sex,
+  text = ~paste0(
+    "Geslacht: <b>", Sex, "</b>",
+    "</b><br>Aantal cases: <b>", 
+    format(round(n, 0), big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+  ),
+  hoverinfo = "text",
+  width = 0.6
+) 
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_barchart(fig)
+fig
+```
+## Stacked Bar Graph
+This section demonstrates how to make a stacked bar graph created with ggplotly or plotly keyboard accessible. The example shows how to use `ro_ply_keyboard_nav_barchart()` to enable keyboard navigation and accessible tooltips for all bars.
+ 
+### Example data
+```{r example data stacked bar graph}
+agegroups <- c("0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90+")
+sex <- c("Vrouw", "Man", "Onbekend")
+
+data <- expand.grid(
+  Agegroup = agegroups,
+  Sex = sex,
+  stringsAsFactors = FALSE
+) |>
+  tibble::as_tibble() |>
+  dplyr::rowwise() |>
+  dplyr::mutate(
+    n = if (Sex == "Onbekend") sample(200:3000, 1) else sample(200000:700000, 1)
+  ) |>
+  dplyr::ungroup() |>
+  dplyr::mutate(Sex = factor(Sex, levels = c("Vrouw", "Man", "Onbekend")))
+
+```
+### ggplotly Stacked Bar Graph
+```{r ggplotly stacked bar graph}
+library(ggplot2)
+library(plotly)
+ 
+p <- ggplot(data, aes(x = Agegroup, y = n, fill = Sex,
+                      text = paste0(
+                        "Aantal cases: <b>", format(n, big.mark = ".", decimal.mark = ",", scientific = FALSE),
+                        "</b><br>Leeftijdsgroep: <b>", Agegroup,
+                        "</b><br>Geslacht: <b>", Sex
+                      ))) +
+  geom_col(width = 0.7, position = "stack") +
+  labs(x = "Leeftijdsgroep", y = "Aantal cases", fill = "Geslacht")
+
+# Convert to plotly and add accessibility
+fig <- ggplotly(p, tooltip = "text")
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_barchart(fig)
+fig
+```
+### plotly Stacked Bar Graph
+```{r plotly stacked bar graph}
+library(plotly)
+ 
+fig <- plot_ly(
+  data = data, # your tibble
+  x = ~Agegroup,
+  y = ~n,
+  color = ~Sex,
+  type = "bar",
+  text = ~paste0(
+    "Aantal cases: <b>", format(n, big.mark = ".", decimal.mark = ",", scientific = FALSE),
+    "</b><br>Leeftijdsgroep: <b>", Agegroup,
+    "</b><br>Geslacht: <b>", Sex
+  ),
+  textposition = "none",
+  hoverinfo = "text"
+) |> 
+  layout(barmode = "stack")
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_barchart(fig)
+fig
+```
+
+## Proportional Stacked Bar Graph
+This section demonstrates how to make a proportional stacked bar graph created with plotly keyboard accessible. The example shows how to use `ro_ply_keyboard_nav_barchart()` to enable keyboard navigation and accessible tooltips for all bars.
+
+Note: Proportional stacked bar graphs are not supported via ggplotly, only via plotly.
+
+
+### Example data
+```{r example data proportional stacked bar graph}
+age_cat <- c("0-19", "20-39", "40-59", "60+")
+sex <- c("Vrouw", "Man")
+period <- c("Na", "Voor")
+
+data <- expand.grid(
+  age_cat = age_cat,
+  omicron_period = period,
+  stringsAsFactors = FALSE
+) |>
+  tibble::as_tibble() |>
+  dplyr::rowwise() |>
+  dplyr::mutate(
+    # Simuleer totaal aantal cases per groep
+    total_n = sample(50000:1200000, 1),
+    # Simuleer random verhouding tussen vrouw/man
+    vrouw_prop = runif(1, 0.45, 0.55),
+    man_prop = 1 - vrouw_prop,
+    n_vrouw = as.integer(total_n * vrouw_prop),
+    n_man = total_n - n_vrouw
+  ) |>
+  dplyr::ungroup() |>
+  # Zet weer om naar long format per sex
+  tidyr::pivot_longer(
+    cols = c(n_vrouw, n_man),
+    names_to = "Sex",
+    values_to = "n",
+    names_prefix = "n_"
+  ) |>
+  dplyr::group_by(age_cat, omicron_period) |>
+  dplyr::mutate(
+    prop = n / sum(n),
+    bar_label = paste0(age_cat, " (", omicron_period, ")"),
+    prop_label = paste0(format(round(prop * 100, 1), decimal.mark = ","), "%")
+  ) |>
+  dplyr::ungroup() |>
+  dplyr::select(age_cat, Sex, omicron_period, n, prop, bar_label, prop_label)
+
+# Order the labels
+data <- data |>
+  dplyr::mutate(
+    Sex = dplyr::recode(Sex, "vrouw" = "Vrouw", "man" = "Man")
+  )
+bar_label_levels <- as.vector(outer(age_cat, period, function(a, p) paste0(a, " (", p, ")")))
+data <- data |>
+  dplyr::mutate(
+    bar_label = factor(bar_label, levels = bar_label_levels),
+    Sex = factor(Sex, levels = c("Vrouw", "Man"))
+  ) |>
+  dplyr::arrange(bar_label, Sex) |>
+  dplyr::select(age_cat, Sex, omicron_period, n, prop, bar_label, prop_label)
+
+# Show the structure of the data
+str(data)
+```
+
+```{r ggplotly proportional stacked bar graph, include = FALSE}
+### ggplotly Proportional Stacked Bar Graph
+library(ggplot2)
+library(plotly)
+ 
+```
+### plotly Proportional Stacked Bar Graph
+```{r plotly proportional stacked bar graph}
+library(plotly)
+ 
+fig <- plot_ly(
+  data = data,
+  y = ~bar_label,
+  x = ~prop,
+  color = ~Sex,
+  orientation = "h",
+  type = "bar",
+  text = ~paste0(
+    "Leeftijdsgroep: <b>", age_cat, "<br></b>",
+    "Omicron periode: <b>", omicron_period, "<br></b>",
+    "Geslacht: <b>", Sex, "<br></b>",
+    "Percentage: <b>", prop_label, "<br></b>"
+  ),
+  textposition = "auto",
+  hovertemplate = ~paste0(
+    "Leeftijdsgroep: <b>", age_cat, "<br></b>",
+    "Omicron periode: <b>", omicron_period, "<br></b>",
+    "Geslacht: <b>", Sex, "<br></b>",
+    "Percentage: <b>", prop_label, "<br></b>"
+  ),
+  hoverinfo = "text"
+) |> layout(barmode = "stack")
+
+fig <- ro_ply_keyboard_nav_barchart(fig)
+fig
+```
+
+
+
+
+## Trendline
+This section demonstrates how to make a trendline created with ggplotly or plotly keyboard accessible. The `ro_ply_keyboard_nav_trendline()` function allows users to focus on individual points (not lines), with tooltips and ARIA labels for screen readers.
+
+### Example data
+```{r example data Trendline}
+dates <- seq(as.Date("2021-10-04"), by = "day", length.out = 100)
+n <- round(2500 + 700 * sin(seq_along(dates) / 25) + seq_along(dates) * 3 + rnorm(length(dates), 0, 150))
+moving_average <- stats::filter(n, rep(1 / 7, 7), sides = 2)
+text <- paste0(
+  "Dag: <b>", format(dates, "%d-%m-%Y"), "</b><br>",
+  "Aantal cases: <b>", format(n, big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b><br>",
+  "7-daags gemiddelde: <b>", format(round(moving_average, 0), 
+                                    big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+)
+
+data <- tibble::tibble(
+  Date_statistics = dates,
+  n = n,
+  moving_average = as.numeric(moving_average),
+  text = text
+)
+```
+### ggplotly Trendline
+```{r ggplotly Trendline}
+p <- ggplot(data, aes(x = Date_statistics, y = n, text = text, group = 1)) +
+  geom_line() +
+  geom_point() 
+
+# Convert to plotly and add accessibility
+fig <- ggplotly(p, tooltip = "text")
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_trendline(fig)
+fig
+```
+### plotly Trendline
+```{r plotly Trendline}
+library(plotly)
+ 
+fig <- plotly::plot_ly()
+fig <- fig |>
+  plotly::add_trace(
+    data = data,
+    x = ~Date_statistics,
+    y = ~n,
+    type = "scatter",
+    mode = "markers",
+    name = "Aantal cases",
+    text = ~text,
+    hoverinfo = "text"
+  )
+# Add line for moving average
+fig <- fig |>
+  plotly::add_trace(
+    data = data,
+    x = ~Date_statistics,
+    y = ~moving_average,
+    type = "scatter",
+    mode = "lines",
+    name = "7-daags gemiddelde",
+    text = ~text,
+    hoverinfo = "text"
+  )
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_trendline(fig)
+fig
+```
+
+## Grouped Trendline
+This section demonstrates how to make a grouped trendline created with ggplotly or plotly keyboard accessible. The `ro_ply_keyboard_nav_trendline()` function allows users to focus on individual points (not lines), with tooltips and ARIA labels for screen readers.
+
+### Example data
+```{r example data Grouped Trendline}
+categories <- LETTERS[1:5]  # "A", "B", "C", "D", "E"
+weeks <- seq(as.Date("2023-01-02"), as.Date("2023-05-29"), by = "week")
+
+data <- tidyr::expand_grid(
+  week = weeks,
+  Category = categories
+) |> 
+  dplyr::mutate(
+    n = dplyr::case_when(
+      Category == "A" ~ round(100 + 10 * as.numeric(week - min(week)) / 7 + stats::rnorm(dplyr::n(), 0, 15)),
+      Category == "B" ~ round(50 + 2 * as.numeric(week - min(week)) / 7 + stats::rnorm(dplyr::n(), 0, 7)),
+      Category == "C" ~ round(80 + 5 * sin(dplyr::row_number() / 4) + stats::rnorm(dplyr::n(), 0, 10)),
+      Category == "D" ~ round(200 - 5 * as.numeric(week - min(week)) / 7 + stats::rnorm(dplyr::n(), 0, 18)),
+      Category == "E" ~ round(70 + 8 * cos(dplyr::row_number() / 5) + stats::rnorm(dplyr::n(), 0, 12))
+    )
+  )
+data <- data |>
+  dplyr::mutate(
+    text = paste0(
+      "Week: <b>", format(week, "%d-%m-%Y"), "</b><br>",
+      "Categorie: <b>", Category, "</b><br>",
+      "Aantal cases: <b>", format(n, big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+    )
+  )
+cat_names <- unique(data$Category)
+```
+### ggplotly Grouped Trendline
+```{r ggplotly Grouped Trendline}
+library(ggplot2)
+library(plotly)
+ 
+p <- ggplot(data, aes(x = week, y = n, color = Category, group = Category, text = text)) +
+  geom_line() +
+  geom_point() 
+
+# Convert to plotly and add accessibility
+fig <- ggplotly(p, tooltip = "text")
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_trendline(fig)
+fig
+```
+
+### plotly Grouped Trendline
+
+```{r plotly Grouped Trendline}
+library(plotly)
+ 
+
+
+fig <- plotly::plot_ly()
+for (cat in cat_names) {
+  subset <- data[data$Category == cat, ]
+  fig <- fig |>
+    plotly::add_trace(
+      data = subset,
+      x = ~week,
+      y = ~n,
+      type = "scatter",
+      mode = "lines+markers",
+      name = cat,
+      text = ~text,
+      hoverinfo = "text"
+    )
+}
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_trendline(fig)
+fig
+```
+
+## Line Chart
+
+This section demonstrates how to make a line chart created with ggplotly or plotly keyboard accessible. The `ro_ply_keyboard_nav_linechart()` adds keyboard focus to lines, and shows a focus-point.
+
+### Example data
+```{r example data Line Chart}
+base_data <- tidyr::tibble(expand.grid(
+  Jaar = 2001:2020,
+  Geslacht = c("Man", "Vrouw")
+)) |>
+  dplyr::mutate(value = sample(1:50, dplyr::n(), TRUE))
+
+total_data <- base_data |>
+  dplyr::group_by(Jaar) |>
+  dplyr::summarize(value = sum(value), .groups = "drop") |>
+  dplyr::mutate(Geslacht = "Totaal")
+
+data <- dplyr::bind_rows(base_data, total_data) |>
+  dplyr::mutate(Geslacht = factor(Geslacht, levels = c("Man", "Vrouw", "Totaal")))
+
+```
+### ggplotly Line Chart
+`ro_ply_keyboard_nav_linechart`
+```{r ggplotly Line Chart}
+library(ggplot2)
+library(plotly)
+ 
+
+p <- ggplot(data, aes(x = Jaar, y = value, color = Geslacht, group = Geslacht,
+                      text = paste0(
+                        "Geslacht: <b>", Geslacht,
+                        "</b><br>Jaar: <b>", Jaar,
+                        "</b><br>Aantal cases: <b>", value
+                      ))) +
+  geom_line() 
+
+# Convert to plotly and add accessibility
+fig <- ggplotly(p, tooltip = "text")
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_linechart(fig)
+fig
+```
+### plotly Line Chart
+```{r plotly Line Chart}
+library(plotly)
+ 
+
+fig <- plot_ly()
+
+for (geslacht in levels(data$Geslacht)) {
+  subset <- data |> filter(Geslacht == geslacht)
+  
+  fig <- fig |>
+    add_trace(
+      data = subset,
+      x = ~Jaar,
+      y = ~value,
+      type = "scatter",
+      mode = "lines",
+      name = geslacht,
+      text = paste0(
+        "Geslacht: <b>", subset$Geslacht,
+        "</b><br>Jaar: <b>", subset$Jaar,
+        "</b><br>Aantal cases: <b>", subset$value
+      ),
+      hoverinfo = "text"
+    )
+}
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_linechart(fig)
+fig
+```
+
+# Keyboard accessibility - ggplotly and plotly legends
+
+By default, plotly legends are not keyboard accessible. 
+The `ro_ply_keyboard_nav_legend()` function makes it possible to reach and toggle legend items using the keyboard, with visual focus indication and ARIA attributes for screen readers.
+
+Note: For stacked bar graphs for ggplot, it is advised to disable the legend filtering (also with the mouse) altogether, as the image is not re-rendered after filtering, which can lead to 'floating' bars.
+
+### Example data and plot (horizontal barchart from above)
+
+The example data is used from the horizontal barchart as shown above.
+
+```{r example data horizontal barchart for the legend}
+data <- tidyr::tibble(
+  expand.grid(`Age group` = c("A", "B", "C", "D", "E"), `Sex` = c("Man", "Vrouw")),
+  `Number of Cases` = sample(1:50, 10, TRUE)
+) 
+library(ggplot2)
+library(plotly)
+ 
+p <- ggplot(data, aes(
+  x = `Number of Cases`,
+  y = `Age group`,
+  fill = Sex,
+  text = paste0(
+    "Leeftijdsgroep: <b>", `Age group`, "</b><br>",
+    "Geslacht: <b>", Sex, "</b><br>",
+    "Aantal cases: <b>", `Number of Cases`, "</b>"
+  )
+)) +
+  geom_col(position = "dodge") +
+  labs(
+    x = "Aantal cases",
+    y = "Leeftijdsgroep",
+    fill = "Geslacht"
+  ) 
+
+# Convert to plotly and add accessibility
+fig <- ggplotly(p, tooltip = "text")
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_barchart(fig)
+```
+After the figure is made, the legend can be made accessible.
+
+```{r legend example horizontal barchart} 
+# Add the keyboard accessibility to the legend
+fig <- ro_ply_keyboard_nav_legend(fig)
+fig
+
+```
+
+
+# ggplotly and plotly disable toolbar
+The plotly modebar / toolbar can be distracting or inaccessible for keyboard users. 
+
+The `ro_ply_disable_toolbar()` function removes the toolbar and disables legend popup further improving accessibility.
+
+### Example data and plot 
+
+The example data is used from the horizontal barchart as shown above.
+
+```{r example data horizontal barchart for disabling the toolbar}
+data <- tidyr::tibble(
+  expand.grid(`Age group` = c("A", "B", "C", "D", "E"), `Sex` = c("Man", "Vrouw")),
+  `Number of Cases` = sample(1:50, 10, TRUE)
+) 
+library(ggplot2)
+library(plotly)
+ 
+p <- ggplot(data, aes(
+  x = `Number of Cases`,
+  y = `Age group`,
+  fill = Sex,
+  text = paste0(
+    "Leeftijdsgroep: <b>", `Age group`, "</b><br>",
+    "Geslacht: <b>", Sex, "</b><br>",
+    "Aantal cases: <b>", `Number of Cases`, "</b>"
+  )
+)) +
+  geom_col(position = "dodge") +
+  labs(
+    x = "Aantal cases",
+    y = "Leeftijdsgroep",
+    fill = "Geslacht"
+  ) 
+
+# Convert to plotly and add accessibility
+fig <- ggplotly(p, tooltip = "text")
+
+# Add the keyboard accessibility in the plot
+fig <- ro_ply_keyboard_nav_barchart(fig)
+# Add keyboard accessibility to the legend
+fig <- ro_ply_keyboard_nav_legend(fig)
+```
+Then the toolbar / modbar can be disabled, and the pop-up on filtering can be disabled as well, as this not accessible with the keyboard
+
+```{r modbar example horizontal barchart} 
+# Disable the modbar and filtering pop-up
+fig <- ro_ply_disable_toolbar(fig)
+fig
+```
