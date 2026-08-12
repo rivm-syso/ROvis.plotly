@@ -16,7 +16,7 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 ```{r, setup}
-library(ROvis.plotly) 
+library(ROvis.plotly) # nolint: missing_package_linter.
 ```
 # Introduction
 This vignette demonstrates the use of accessibility functions for interactive `plotly` and `ggplotly` plots.
