@@ -1,6 +1,8 @@
 test_that("ro_ply_theme returns a correct theme list", {
   # Minimal dummy color function if not loaded
-  if (!exists("color")) color <- function(color_name) "#123456"
+  if (!exists("color")) {
+    color <- function(color_name) "#123456"
+  }
 
   theme <- ro_ply_theme(
     base_family = "Arial",
@@ -15,7 +17,9 @@ test_that("ro_ply_theme returns a correct theme list", {
   )
 
   expect_true(is.list(theme))
-  expect_true(all(c("title", "yaxis", "xaxis", "legend", "font", "plot_bgcolor", "paper_bgcolor", "colorway") %in% names(theme)))
+  expect_true(all(
+    c("title", "yaxis", "xaxis", "legend", "font", "plot_bgcolor", "paper_bgcolor", "colorway") %in% names(theme)
+  ))
 
   # Check correct types and values for some elements
   expect_equal(theme$title$font$family, "Arial")

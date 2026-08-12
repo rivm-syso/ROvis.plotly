@@ -26,7 +26,8 @@
 ro_ply_focus_linechart <- function() {
   tags$head(
     tags$style(
-      HTML("
+      HTML(
+        "
       .scatterlayer .lines:focus, .scatterlayer .lines:focus-visible {
       outline: none !important;
       box-shadow: none !important;

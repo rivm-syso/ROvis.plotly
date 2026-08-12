@@ -1,7 +1,7 @@
 test_that("ro_ply_add_theme applies a layout", {
   library(plotly)
 
-  fig <- plot_ly(x = 1:3, y = 1:3) |>  plotly::layout()
+  fig <- plot_ly(x = 1:3, y = 1:3) |> plotly::layout()
 
   minimal_theme <- list(
     title = list(

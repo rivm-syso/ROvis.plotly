@@ -416,7 +416,9 @@ setTimeout(function() {
 #' }
 
 ro_ply_keyboard_nav_bargraph <- function(fig) {
-  fig2 <- onRender(fig, "
+  fig2 <- onRender(
+    fig,
+    "
 function(el, x) {
   // First two functions to add or remove the tooltip/hoverlabel, as the crosshair/spike also creates a tooltip
   // Helper function to hide hoverlabel/tooltip
@@ -1192,7 +1194,9 @@ var trace = traceObj.trace;
 #' fig
 #' }
 ro_ply_keyboard_nav_legend <- function(fig) {
-  fig2 <- onRender(fig, "function(el, x) {
+  fig2 <- onRender(
+    fig,
+    "function(el, x) {
 
   // Track last input type: keyboard or mouse
   var keyboardMode = false;

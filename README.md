@@ -1,3 +1,10 @@
+<!-- badges: start -->
+[![CI](https://img.shields.io/endpoint?url=https://rivm-syso.github.io/ROvis.plotly/badges/ci.json)](https://github.com/rivm-syso/ROvis.plotly/actions/workflows/ci.yaml)
+[![Lint](https://img.shields.io/endpoint?url=https://rivm-syso.github.io/ROvis.plotly/badges/lint.json)](https://github.com/rivm-syso/ROvis.plotly/actions/workflows/ci.yaml)
+[![Coverage](https://img.shields.io/endpoint?url=https://rivm-syso.github.io/ROvis.plotly/badges/coverage.json)](https://github.com/rivm-syso/ROvis.plotly/actions/workflows/ci.yaml)
+<!-- badges: end -->
+
+
 # ROvis.plotly
 
 ## Rijksoverheid Visualisatie - plotly

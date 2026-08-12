@@ -92,7 +92,8 @@
 #' fig <- ro_ply_add_theme(fig, theme_rivm)
 #' fig
 #' }
-ro_ply_theme <- function(barmode = "vgroup",
+ro_ply_theme <- function(
+  barmode = "vgroup",
 
   #Font
   base_family = "RijksoverheidSansWebText",
@@ -130,7 +131,8 @@ ro_ply_theme <- function(barmode = "vgroup",
   cross_hair_width = 1,
 
   # General color theming
-  colorway = c(ro_color(color_name = "hemelblauw"),
+  colorway = c(
+    ro_color(color_name = "hemelblauw"),
     ro_color(color_name = "donkergeel"),
     ro_color(color_name = "robijnrood"),
     ro_color(color_name = "paars_tint90"),

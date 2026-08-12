@@ -17,7 +17,6 @@ test_that("ro_ply_keyboard_nav_barchart uses onRender", {
   expect_gt(length(fig2$jsHooks$render), 0)
   # By htmlwidget
   expect_s3_class(fig2, "htmlwidget")
-
 })
 
 
@@ -39,7 +38,6 @@ test_that("ro_ply_keyboard_nav_bargraph uses onRender", {
   expect_gt(length(fig2$jsHooks$render), 0)
   # By htmlwidget
   expect_s3_class(fig2, "htmlwidget")
-
 })
 
 
@@ -61,7 +59,6 @@ test_that("ro_ply_keyboard_nav_trendline uses onRender", {
   expect_gt(length(fig2$jsHooks$render), 0)
   # By htmlwidget
   expect_s3_class(fig2, "htmlwidget")
-
 })
 
 
@@ -83,5 +80,4 @@ test_that("ro_ply_keyboard_nav_linechart uses onRender", {
   expect_gt(length(fig2$jsHooks$render), 0)
   # By htmlwidget
   expect_s3_class(fig2, "htmlwidget")
-
 })
