@@ -177,10 +177,10 @@ data <- tibble::tibble(expand.grid(`Age group` = c("A", "B", "C", "D", "E"),
 
 theme_rivm <- ro_ply_theme(y_axis_spike = TRUE,
                            x_axis_spike = FALSE,
-                                  y_axis_showline = TRUE,
-                                  x_axis_showline = FALSE,
-                                  y_axis_showgrid = FALSE,
-                                  x_axis_showgrid = TRUE)
+                           y_axis_showline = TRUE,
+                           x_axis_showline = FALSE,
+                           y_axis_showgrid = FALSE,
+                           x_axis_showgrid = TRUE)
 kleuren <- c(theme_rivm$colorway[1], theme_rivm$colorway[3])
 
 fig <- plot_ly() |>
