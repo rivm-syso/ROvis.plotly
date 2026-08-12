@@ -944,7 +944,7 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
 #' fig
 #' }
 ro_ply_keyboard_nav_linechart <- function(fig) {
-  fig2 <- htmlwidgets::onRender(
+  fig2 <- onRender(
     fig,
     "
     function(el, x) {
@@ -1316,7 +1316,7 @@ ro_ply_disable_toolbar <- function(fig) {
   fig <- plotly::config(fig, displayModeBar = FALSE)
 
   # Disable the pop-up when the legend is used, as this is not accessible
-  fig <- fig |> plotly::layout(legend = list(itemdoubleclick = FALSE))
+  fig <- fig |> layout(legend = list(itemdoubleclick = FALSE))
 
   fig2 <- fig
   return(fig2)

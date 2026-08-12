@@ -146,7 +146,7 @@ ro_ply_title <- function(
 
   # Add to the layout
   fig <- fig |>
-    plotly::layout(
+    layout(
       title = list(text = ""), # Remove the title, yaxis and xaxis label if present
       yaxis = list(title = ""),
       xaxis = list(title = ""),

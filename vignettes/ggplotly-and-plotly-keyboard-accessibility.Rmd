@@ -16,7 +16,7 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
 ```{r, setup}
-library(ROvis.plotly)
+library(ROvis.plotly) # nolint: missing_package_linter.
 ```
 # Introduction
 This vignette demonstrates the use of accessibility functions for interactive `plotly` and `ggplotly` plots.
@@ -457,7 +457,7 @@ fig
 ```{r plotly Trendline}
 library(plotly)
  
-fig <- plotly::plot_ly()
+fig <- plot_ly()
 fig <- fig |>
   plotly::add_trace(
     data = data,
@@ -542,7 +542,7 @@ library(plotly)
  
 
 
-fig <- plotly::plot_ly()
+fig <- plot_ly()
 for (cat in cat_names) {
   subset <- data[data$Category == cat, ]
   fig <- fig |>

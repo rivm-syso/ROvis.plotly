@@ -12,7 +12,7 @@ knitr::opts_chunk$set(collapse = TRUE, echo = TRUE)
 ```
 
 ```{r setup}
-library(ROvis.plotly)
+library(ROvis.plotly) # nolint: missing_package_linter.
 ```
 
 # Introduction
@@ -81,7 +81,7 @@ data <- dplyr::bind_rows(base_data, summary_data) |>
 theme_rivm <- ro_ply_theme(barmode = "group")
 kleuren <- c(theme_rivm$colorway[1], theme_rivm$colorway[3], theme_rivm$colorway[4])
 
-fig <- plotly::plot_ly(
+fig <- plot_ly(
   data = data,
   x = ~`Age group`,
   y = ~`Number of Cases`,
@@ -120,12 +120,12 @@ bar_data <- tibble::tibble(
 
 # Use the  color function for RIVM colors
 sex_colors <- c(
-  "Man" = ROvis.utils::ro_color("hemelblauw"),
-  "Vrouw" = ROvis.utils::ro_color("robijnrood")
+  "Man" = ro_color("hemelblauw"),
+  "Vrouw" = ro_color("robijnrood")
 )
 
 # Create plotly bar chart
-fig <- plotly::plot_ly(
+fig <- plot_ly(
   data = bar_data,
   x = ~Sex,
   y = ~n,
@@ -176,14 +176,14 @@ data <- tibble::tibble(expand.grid(`Age group` = c("A", "B", "C", "D", "E"),
                        `Number of Cases` = sample(1:50, 10, TRUE))
 
 theme_rivm <- ro_ply_theme(y_axis_spike = TRUE,
-                                  x_axis_spike = FALSE,
+                           x_axis_spike = FALSE,
                                   y_axis_showline = TRUE,
                                   x_axis_showline = FALSE,
                                   y_axis_showgrid = FALSE,
                                   x_axis_showgrid = TRUE)
 kleuren <- c(theme_rivm$colorway[1], theme_rivm$colorway[3])
 
-fig <- plotly::plot_ly() |>
+fig <- plot_ly() |>
   plotly::add_trace(data = data,
     x = ~`Number of Cases`,
     y = ~`Age group`,
@@ -226,16 +226,16 @@ stacked_data <- tibble::tibble(
 
 # Define color palette using your color function
 sex_colors <- c(
-  "Man" = ROvis.utils::ro_color("hemelblauw"),
-  "Vrouw" = ROvis.utils::ro_color("robijnrood"),
-  "Onbekend" = ROvis.utils::ro_color("donkergeel")
+  "Man" = ro_color("hemelblauw"),
+  "Vrouw" = ro_color("robijnrood"),
+  "Onbekend" = ro_color("donkergeel")
 )
 
 # Use ro_ply_theme with barmode = "stack"
 theme_rivm <- ro_ply_theme(barmode = "stack")
 
 # Create the plotly stacked bar chart
-fig <- plotly::plot_ly(
+fig <- plot_ly(
   data = stacked_data,
   x = ~Agegroup,
   y = ~n,
@@ -293,15 +293,15 @@ prop_data <- tibble::tibble(
 
 # Define color palette using your color function
 sex_colors <- c(
-  "Man" = ROvis.utils::ro_color("hemelblauw"),
-  "Vrouw" = ROvis.utils::ro_color("robijnrood")
+  "Man" = ro_color("hemelblauw"),
+  "Vrouw" = ro_color("robijnrood")
 )
 
 # Use ro_ply_theme with barmode = "stack"
 theme_rivm <- ro_ply_theme(barmode = "stack")
 
 # Create the proportional stacked bar chart (horizontal)
-fig <- plotly::plot_ly(
+fig <- plot_ly(
   data = prop_data,
   y = ~bar_label,
   x = ~prop,
@@ -337,7 +337,7 @@ fig <- ro_ply_dim(fig)
 
 # Format x-axis as percentage
 fig <- fig |> 
-  plotly::layout(
+  layout(
     xaxis = list(
       tickformat = ".0%",
       range = c(0, 1),
@@ -378,21 +378,21 @@ tab_cases_rolling_average <- tibble::tibble(
 
 theme_rivm <- ro_ply_theme(x_axis_tick_format = "%d %b")
 
-fig <- plotly::plot_ly(
+fig <- plot_ly(
   data = tab_cases_rolling_average,
   x = ~Date_statistics
 ) |> 
   plotly::add_markers(
     y = ~n,
     name = "Aantal cases",
-    marker = list(color = ROvis.utils::ro_color("robijnrood_tint60"), size = 5),
+    marker = list(color = ro_color("robijnrood_tint60"), size = 5),
     text = ~text,
     hoverinfo = "text"
   ) |> 
   plotly::add_lines(
     y = ~moving_average,
     name = "7-daags gemiddelde",
-    line = list(color = ROvis.utils::ro_color("robijnrood"), width = 2),
+    line = list(color = ro_color("robijnrood"), width = 2),
     text = ~text,
     hoverinfo = "text"
   )
@@ -437,7 +437,7 @@ theme_rivm <- ro_ply_theme(x_axis_tick_format = "%d %b")
 prov_names <- unique(tab_cases_week_by_prov$Province)
 prov_colors <- setNames(theme_rivm$colorway[seq_along(prov_names)], prov_names)
 
-fig <- plotly::plot_ly()
+fig <- plot_ly()
 for (prov in prov_names) {
   prov_data <- filter(tab_cases_week_by_prov, Province == prov)
   fig <- fig |> 
@@ -503,9 +503,9 @@ kleuren <- c(
 )
 
 # Create the plotly line chart
-fig <- plotly::plot_ly()
+fig <- plot_ly()
 for (geslacht in levels(data_all$Geslacht)) {
-  subset <- dplyr::filter(data_all, Geslacht == geslacht)
+  subset <- filter(data_all, Geslacht == geslacht)
   fig <- fig |> 
     plotly::add_trace(
       data = subset,

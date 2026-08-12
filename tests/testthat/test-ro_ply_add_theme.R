@@ -19,8 +19,8 @@ test_that("ro_ply_add_theme applies a layout", {
   # Get the title
   title <- fig_themed$x$layoutAttrs[[2]]$title
   # Get the title styling
-  expect_equal(title$text, "Test title")
-  expect_equal(title$font$family, "Arial")
-  expect_equal(title$font$size, 20)
-  expect_equal(title$font$color, "red")
+  expect_identical(title$text, "Test title")
+  expect_identical(title$font$family, "Arial")
+  expect_identical(title$font$size, 20)
+  expect_identical(title$font$color, "red")
 })

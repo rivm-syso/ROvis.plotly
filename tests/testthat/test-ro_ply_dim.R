@@ -5,6 +5,6 @@ test_that("plotly_dim_theme sets correct width and height", {
   fig_dimmed <- ro_ply_dim(fig, width = 800, height = 500)
 
   # Test that the sizingPolicy is updated
-  expect_equal(fig_dimmed$sizingPolicy$defaultWidth, 800)
-  expect_equal(fig_dimmed$sizingPolicy$defaultHeight, 500)
+  expect_identical(fig_dimmed$sizingPolicy$defaultWidth, 800)
+  expect_identical(fig_dimmed$sizingPolicy$defaultHeight, 500)
 })

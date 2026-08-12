@@ -7,11 +7,11 @@ test_that("ro_ply_title adds main title as annotation", {
   layout_annots <- Filter(Negate(is.null), layout_annots)
   annots <- unlist(layout_annots, recursive = FALSE)
 
-  expect_equal(length(annots), 1)
+  expect_length(annots, 1)
   expect_true(grepl("My Title", annots[[1]]$text))
-  expect_equal(annots[[1]]$xanchor, "left")
-  expect_equal(annots[[1]]$font$family, "Arial")
-  expect_equal(annots[[1]]$font$color, "#000000")
+  expect_identical(annots[[1]]$xanchor, "left")
+  expect_identical(annots[[1]]$font$family, "Arial")
+  expect_identical(annots[[1]]$font$color, "#000000")
 })
 
 test_that("ro_ply_title adds y_label as annotation", {
@@ -23,11 +23,11 @@ test_that("ro_ply_title adds y_label as annotation", {
   layout_annots <- Filter(Negate(is.null), layout_annots)
   annots <- unlist(layout_annots, recursive = FALSE)
 
-  expect_equal(length(annots), 1)
-  expect_equal(annots[[1]]$text, "Aantal gevallen")
-  expect_equal(annots[[1]]$x, 0)
-  expect_equal(annots[[1]]$y, 1)
-  expect_equal(annots[[1]]$font$family, "Arial")
+  expect_length(annots, 1)
+  expect_identical(annots[[1]]$text, "Aantal gevallen")
+  expect_identical(annots[[1]]$x, 0)
+  expect_identical(annots[[1]]$y, 1)
+  expect_identical(annots[[1]]$font$family, "Arial")
 })
 
 test_that("ro_ply_title adds all three annotations", {
@@ -46,13 +46,13 @@ test_that("ro_ply_title adds all three annotations", {
   layout_annots <- Filter(Negate(is.null), layout_annots)
   annots <- unlist(layout_annots, recursive = FALSE)
 
-  expect_equal(length(annots), 3)
+  expect_length(annots, 3)
   expect_true(any(grepl("Hoofdtitel", sapply(annots, function(a) a$text))))
   expect_true(any(sapply(annots, function(a) a$text == "Aantal gevallen")))
   expect_true(any(sapply(annots, function(a) a$text == "Groepen")))
 
   for (a in annots) {
-    expect_equal(a$font$family, "Arial")
-    expect_equal(a$font$color, "#112233")
+    expect_identical(a$font$family, "Arial")
+    expect_identical(a$font$color, "#112233")
   }
 })

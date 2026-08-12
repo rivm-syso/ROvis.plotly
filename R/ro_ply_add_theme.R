@@ -14,7 +14,7 @@
 #' }
 ro_ply_add_theme <- function(fig, theme) {
   # Add the theme
-  fig <- do.call(plotly::layout, c(list(fig), theme))
+  fig <- do.call(layout, c(list(fig), theme))
 
   return(fig)
 }

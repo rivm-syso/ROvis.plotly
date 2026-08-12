@@ -16,7 +16,7 @@
 #' }
 ro_ply_cursor <- function(fig) {
   #The default of plotly is a cross, but a cursor is better
-  fig <- htmlwidgets::onRender(
+  fig <- onRender(
     fig,
     '
     function(el, x) {

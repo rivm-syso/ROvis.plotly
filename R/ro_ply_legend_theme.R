@@ -18,7 +18,7 @@
 #' }
 ro_ply_legend_theme <- function(fig) {
   # Add boxes around the legend items instead of the legend itself
-  fig3 <- htmlwidgets::onRender(
+  fig3 <- onRender(
     fig,
     "
   function(el, x) {
@@ -64,7 +64,7 @@ ro_ply_legend_theme <- function(fig) {
   )
 
   # Make the legend sybols rectangular
-  fig4 <- htmlwidgets::onRender(
+  fig4 <- onRender(
     fig3,
     "
   function(el, x) {

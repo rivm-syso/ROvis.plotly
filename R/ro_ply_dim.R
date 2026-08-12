@@ -19,7 +19,7 @@
 ro_ply_dim <- function(fig, width = 776, height = 400) {
   # Make sure the plot is the correct dimensions and ratio
   fig5 <- fig |>
-    plotly::layout(
+    layout(
       autosize = TRUE
     )
   fig5$sizingPolicy$defaultWidth <- width
