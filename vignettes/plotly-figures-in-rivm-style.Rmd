@@ -12,7 +12,8 @@ knitr::opts_chunk$set(collapse = TRUE, echo = TRUE)
 ```
 
 ```{r setup}
-library(ROvis.plotly) # nolint: missing_package_linter.
+library(ROvis.plotly) 
+library(ROvis.utils)
 ```
 
 # Introduction
