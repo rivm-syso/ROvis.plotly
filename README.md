@@ -5,7 +5,7 @@
 <!-- badges: end -->
 
 
-# ROvis.plotly
+# ROvis.plotly <a href="https://github.com/rivm-syso/ROvis.plotly"><img src="man/figures/logo.png" align="right" height="138" /></a>
 
 ## Rijksoverheid Visualisatie - plotly
 
