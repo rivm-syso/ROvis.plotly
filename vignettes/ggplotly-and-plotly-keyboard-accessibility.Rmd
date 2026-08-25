@@ -22,7 +22,7 @@ library(ROvis.plotly) # nolint: missing_package_linter.
 This vignette demonstrates the use of accessibility functions for interactive `plotly` and `ggplotly` plots.
 These functions are designed to improve keyboard and screen reader accessibility for various types of interactive charts.
 
-Note: The example plots in this vignette are for demonstration only and do not themselves comply with the RIVM huisstijl requirements.
+Note: The example plots in this vignette are for demonstration only and do not themselves comply with the Rijksoverheid style requirements.
 
 Key Accessibility Features
 
