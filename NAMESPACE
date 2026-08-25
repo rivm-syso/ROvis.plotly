@@ -14,14 +14,16 @@ export(ro_ply_legend_theme)
 export(ro_ply_theme)
 export(ro_ply_title)
 import(rlang)
-importFrom(ROvis.utils,ro_check_if_font_available)
-importFrom(ROvis.utils,ro_color)
+importFrom(ROvis.utils,
+  ro_check_if_font_available,
+  ro_color
+)
 importFrom(cli,cli_abort)
 importFrom(dplyr,filter)
 importFrom(htmlwidgets,onRender)
 importFrom(magrittr,"%>%")
-importFrom(plotly,ggplotly)
-importFrom(plotly,layout)
-importFrom(plotly,plot_ly)
-importFrom(htmltools,HTML)
-importFrom(htmltools,tags)
+importFrom(plotly,
+  ggplotly,
+  layout,
+  plot_ly
+)

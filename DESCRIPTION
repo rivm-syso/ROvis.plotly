@@ -1,7 +1,7 @@
 Package: ROvis.plotly
-Title: Rijksoverheid Visualisatie - plotly
-Version: 0.0.0.9000
-Authors@R: person("spin@rivm.nl", email = "spin@rivm.nl", role = c("cre", "aut"))
+Title: Create interactive data visualisations in Rijksoverheid style using plotly
+Version: 0.1.0
+Authors@R: person("ROvis team", email = "spin@rivm.nl", role = c("cre", "aut"))
 Description: ROvis.plotly is an R package that provides plotly visualisations in Rijksoverheid style.
 License: Apache License (>= 2)
 Depends:
@@ -28,11 +28,9 @@ Suggests:
     tidyr (>= 1.3.1),
     zoo (>= 1.8-14)
 Remotes:     
-  git@github.com:rivm-syso/ROvis.utils.git
-VignetteBuilder: knitr
-Config/Roxygen2/markdown: TRUE
-Config/Roxygen2/version: 8.1.0
+  rivm-syso/ROvis.utils.git
+VignetteBuilder: quarto
+Config/roxygen2/version: 8.1.0
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-Config/roxygen2/version: 8.1.0
