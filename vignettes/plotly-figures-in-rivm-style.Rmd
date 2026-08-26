@@ -1,8 +1,8 @@
 ---
-title: "plotly figures in rivm style"
+title: "plotly figures in Rijksoverheid style"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{plotly figures in rivm style}
+  %\VignetteIndexEntry{plotly figures in Rijksoverheid style}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -19,18 +19,18 @@ library(ROvis.utils)
 
 # Introduction
 
-This vignette demonstrates how to create clear, publication-ready visualizations in R using the [plotly](https://plotly.com/r/) package, styled according to the RIVM huisstijl. The provided functions allow you to quickly apply consistent fonts, colors, grid lines, axes, legends, tooltips, and annotation styling across all your Plotly charts.
+This vignette demonstrates how to create clear, publication-ready visualizations in R using the [plotly](https://plotly.com/r/) package, styled according to the Rijksoverheids style The provided functions allow you to quickly apply consistent fonts, colors, grid lines, axes, legends, tooltips, and annotation styling across all your Plotly charts.
 
 # Key Functions
 
 - **`ro_ply_theme()`**  
-  Returns a list of theming options (colors, fonts, grid, axis, legend, tooltip styles, etc.) based on the RIVM visual identity. You can customize many aspects, such as the color palette, fonts, grid lines, and axis formatting.
+  Returns a list of theming options (colors, fonts, grid, axis, legend, tooltip styles, etc.) based on the Rijksoverheid visual identity. You can customize many aspects, such as the color palette, fonts, grid lines, and axis formatting.
 
 - **`ro_ply_add_theme()`**  
-  Applies the RIVM theme (from `ro_ply_theme()`) to any Plotly figure.
+  Applies the Rijksoverheid / RIVM theme (from `ro_ply_theme()`) to any Plotly figure.
 
 - **`ro_ply_title()`**  
-  Adds a custom, left-aligned main title and axis labels as annotations, in line with the RIVM huisstijl.
+  Adds a custom, left-aligned main title and axis labels as annotations, in line with the Rijksoverheid / RIVM style.
 
 - **`ro_ply_cursor()`**  
   Changes the mouse cursor in interactive Plotly charts from a crosshair to a standard arrow for a friendlier user experience.
@@ -39,7 +39,7 @@ This vignette demonstrates how to create clear, publication-ready visualizations
   Enhances the legend styling by adding boxes around legend items.
 
 - **`ro_ply_dim()`**  
-  Ensures all charts have the correct dimensions for RIVM reports, and are responsive in Shiny applications.
+  Ensures all charts have the correct dimensions for Rijksoverheid / RIVM reports, and are responsive in Shiny applications.
 
 # Code Examples
 
@@ -47,7 +47,7 @@ This vignette demonstrates how to create clear, publication-ready visualizations
 
 This example shows how to create a grouped vertical bar chart (column chart) displaying the number of cases by age group and sex.
 
-The RIVM theme is set with:
+The Rijksoverheid / RIVM theme is set with:
 `theme_rivm <- ro_ply_theme(barmode = "group")`
 where `barmode = "group"` ensures grouped bars for each age group.
 
@@ -111,7 +111,7 @@ fig
 
 ## Bar Graph
 
-This example demonstrates a simple vertical bar chart, showing the number of cases per sex, with the default RIVM theme.
+This example demonstrates a simple vertical bar chart, showing the number of cases per sex, with the default Rijksoverheid / RIVM theme.
 
 ```{r example bar graph}
 # Create example data: counts per group
@@ -120,7 +120,7 @@ bar_data <- tibble::tibble(
   n = c(1234, 1675)
 )
 
-# Use the  color function for RIVM colors
+# Use the  color function for Rijksoverheid / RIVM colors
 sex_colors <- c(
   "Man" = ro_color("hemelblauw"),
   "Vrouw" = ro_color("robijnrood")
@@ -142,7 +142,7 @@ fig <- plot_ly(
   hoverinfo = "text"
 )
 
-# Apply RIVM theme
+# Apply Rijksoverheid / RIVM theme
 fig <- ro_ply_add_theme(fig, ro_ply_theme())
 
 # Add custom title and axis labels
@@ -165,7 +165,7 @@ fig
 ## Horizontal Bar Chart
 
 This example demonstrates how to create a horizontal bar chart grouped by age group and sex.  
-The RIVM theme is customized to:
+The Rijksoverheid / RIVM theme is customized to:
 - show a spike line on the y-axis only,
 - show the y-axis line and hide the x-axis line,
 - show grid lines only for the x-axis.
@@ -496,7 +496,7 @@ data_sum <- data |>
 data_all <- bind_rows(data, data_sum) |>
   mutate(Geslacht = factor(Geslacht, levels = c("Man", "Vrouw", "Totaal")))
 
-# Use RIVM theme and color palette
+# Use Rijksoverheid / RIVM theme and color palette
 theme_rivm <- ro_ply_theme(x_axis_tick_format = ".0f") # No thousand seperator for the x-axis
 kleuren <- c(
   "Man" = theme_rivm$colorway[1],
