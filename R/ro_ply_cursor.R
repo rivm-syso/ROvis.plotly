@@ -21,8 +21,7 @@ ro_ply_cursor <- function(fig) {
     '
     function(el, x) {
       el.style.cursor = "default";
-      var layers = el.querySelectorAll(".plotly .cursor-crosshair, .plotly .scatterlayer,
-      .plotly .cartesianlayer, .plotly .hoverlayer");
+      var layers = el.querySelectorAll(".plotly .cursor-crosshair, .plotly .scatterlayer, .plotly .cartesianlayer, .plotly .hoverlayer");
       layers.forEach(function(layer) {
         layer.style.cursor = "default";
       });
