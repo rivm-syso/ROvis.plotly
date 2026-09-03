@@ -115,7 +115,7 @@ fig <- ro_ply_keyboard_nav_barchart(fig)
 fig
  
 ```
-## Column Chart
+## Grouped Bar Graph / Column Chart
 This section demonstrates how to make a column chart created with ggplotly or plotly keyboard accessible. The example shows how to use `ro_ply_keyboard_nav_barchart()` to enable keyboard navigation and accessible tooltips for all bars.
 
 ### Example data
@@ -148,7 +148,7 @@ data <- dplyr::bind_rows(base_data, summary_data) |>
   ) 
 
 ```
-### ggplotly Column Chart
+### ggplotly Grouped Bar Graph / Column Chart
 ```{r ggplotly column chart}
 p <- ggplot(data, aes(
   x = `Age group`,
@@ -166,10 +166,10 @@ p <- ggplot(data, aes(
 
 # Convert to interactive plotly plot
 fig <- ggplotly(p, tooltip = "text")
-fig <- ro_ply_keyboard_nav_barchart(fig)
+fig <- ro_ply_keyboard_nav_bargraph(fig)
 fig
 ```
-### plotly Column Chart
+### plotly Grouped Bar Graph / Column Chart
 ```{r plotly column chart}
 fig <- plot_ly(
   data = data,
@@ -189,7 +189,7 @@ fig <- plot_ly(
   layout(barmode = "group")
 
 # Add the keyboard accessibility in the plot
-fig <- ro_ply_keyboard_nav_barchart(fig)
+fig <- ro_ply_keyboard_nav_bargraph(fig)
 fig
 ```
 
@@ -223,7 +223,7 @@ p <- ggplot(data, aes(x = Sex, y = n, fill = Sex,
 fig <- ggplotly(p, tooltip = "text")
 
 # Add the keyboard accessibility in the plot
-fig <- ro_ply_keyboard_nav_barchart(fig)
+fig <- ro_ply_keyboard_nav_bargraph(fig)
 fig
 ```
 ### plotly Bar Graph
@@ -244,7 +244,7 @@ fig <- plot_ly(
 ) 
 
 # Add the keyboard accessibility in the plot
-fig <- ro_ply_keyboard_nav_barchart(fig)
+fig <- ro_ply_keyboard_nav_bargraph(fig)
 fig
 ```
 ## Stacked Bar Graph
@@ -287,7 +287,7 @@ p <- ggplot(data, aes(x = Agegroup, y = n, fill = Sex,
 fig <- ggplotly(p, tooltip = "text")
 
 # Add the keyboard accessibility in the plot
-fig <- ro_ply_keyboard_nav_barchart(fig)
+fig <- ro_ply_keyboard_nav_bargraph(fig)
 fig
 ```
 ### plotly Stacked Bar Graph
@@ -311,7 +311,7 @@ fig <- plot_ly(
   layout(barmode = "stack")
 
 # Add the keyboard accessibility in the plot
-fig <- ro_ply_keyboard_nav_barchart(fig)
+fig <- ro_ply_keyboard_nav_bargraph(fig)
 fig
 ```
 
