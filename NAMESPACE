@@ -13,6 +13,7 @@ export(ro_ply_keyboard_nav_trendline)
 export(ro_ply_legend_theme)
 export(ro_ply_theme)
 export(ro_ply_title)
+export(ro_ply_wrapper)
 import(rlang)
 importFrom(ROvis.utils,
   ro_check_if_font_available,
