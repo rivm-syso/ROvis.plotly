@@ -83,9 +83,548 @@
 #' }
 ro_ply_keyboard_nav_barchart <- function(fig) {
   # Add a java-script so that the tooltip is accessible with the keyboard
-  fig2 <- onRender(
-    fig,
-    "
+  fig2 <- onRender(fig, "
+   function(el, x) {
+     // Helper to hide Plotly hover label
+     function hidePlotlyHoverlabel() {
+       if (!document.getElementById('plotly-hide-hoverlabel-style-temp')) {
+         var style = document.createElement('style');
+         style.id = 'plotly-hide-hoverlabel-style-temp';
+         style.innerHTML = '.hoverlayer .hovertext { display: none !important; }';
+         document.head.appendChild(style);
+       }
+     }
+     // Helper function to show hoverlabel again/tooltip
+     function showPlotlyHoverlabel() {
+       var style = document.getElementById('plotly-hide-hoverlabel-style-temp');
+       if (style) {
+         style.parentNode.removeChild(style);
+       }
+     }
+     // Create a div for the custom tooltip if not already present
+     if (!document.getElementById('custom-plotly-tooltip')) {
+       var tooltip = document.createElement('div');
+       tooltip.id = 'custom-plotly-tooltip';
+       tooltip.style.position = 'fixed';
+       tooltip.style.lineHeight = '1.3'; // Space between lines similar between
+       tooltip.style.pointerEvents = 'none'; // Doesn't interfer with the mouse tooltip
+       tooltip.style.zIndex = 99999; // Tooltip is on top
+       tooltip.style.display = 'none'; // Hidden by default
+       tooltip.style.padding = '1px 2px'; // Padding similar to the mouse tool-tip
+       // RIVM huisstijl
+       tooltip.style.background = '#ffffff';
+       tooltip.style.color = '#000000';
+       tooltip.style.borderRadius = '0';
+       tooltip.style.fontSize = '13px';
+       tooltip.style.fontFamily = 'Arial, sans-serif';
+       tooltip.style.fontStyle = 'normal';
+       tooltip.style.fontWeight = 'normal';
+       tooltip.style.textAlign = 'left';
+       tooltip.style.border = '1px solid #000000';
+       tooltip.style.boxShadow = 'none';
+       document.body.appendChild(tooltip); // Add the tooltip to the page
+     }
+     var tooltip = document.getElementById('custom-plotly-tooltip');
+
+     // Hide the keyboard tooltip if the mouse tooltip is used
+     var isKeyboardNavigating = false; // Flag to track keyboard navigation
+     var lastMouseX = null;
+     var lastMouseY = null;
+
+     function hideTooltip() {
+       console.log('=== HIDING TOOLTIP ===', 'Keyboard navigating?', isKeyboardNavigating);
+       // Don't hide if we're in keyboard navigation mode
+       if (isKeyboardNavigating) {
+         console.log('Ignoring hide - keyboard navigation active');
+         return;
+       }
+       tooltip.style.display = 'none';
+     }
+
+     document.addEventListener('mousedown', function(e) {
+       console.log('mousedown event detected');
+       isKeyboardNavigating = false; // Mouse is being used, disable keyboard mode
+       hideTooltip();
+     });
+
+     el.on('plotly_hover', function(e) {
+       console.log('plotly_hover event detected');
+       // Only hide if not in keyboard navigation mode
+       if (!isKeyboardNavigating) {
+         hideTooltip();
+       }
+     });
+
+     // ========== AUTO-SCROLL FOR HIGH ZOOM ==========
+     // Store baseline device pixel ratio (handles Retina displays)
+     if (typeof BASELINE_DPR === 'undefined') {
+       var BASELINE_DPR = window.devicePixelRatio || 1;
+     }
+
+     // Detect if browser is zoomed 200% or more
+     function isHighZoom() {
+       var currentDPR = window.devicePixelRatio || 1;
+       var relativeZoom = Math.round((currentDPR / BASELINE_DPR) * 100);
+       return relativeZoom >= 200;
+     }
+
+     // Respect user's motion preferences
+     function getScrollBehavior() {
+       var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+       return prefersReducedMotion ? 'auto' : 'smooth';
+     }
+     // ========== END AUTO-SCROLL ==========
+
+     // Function to add to each bar, regardless of filtering, that it can be accessed with the keyboard
+     function addBarAccessibility() {
+       // Look for all traces within the barchart
+       var traces = el.querySelectorAll('.barlayer .trace');
+       // Build a flat list of all bars (for arrow navigation)
+       var allBars = [];
+       traces.forEach(function(trace) {
+         // Look for the index, corresponding to the name of the trace
+         var traceName = trace.getAttribute('data-name');
+         var dataIdx = -1;
+         if (traceName && x && x.data) {
+           for (var di = 0; di < x.data.length; di++) {
+             if (x.data[di].name == traceName) {
+               dataIdx = di;
+               break;
+             }
+           }
+         }
+         // Make a list of traces which are found, and thus visible and not filtered
+         if (dataIdx === -1 && x && x.data) {
+           var visibleDataIdx = [];
+           for (var i = 0; i < x.data.length; i++) {
+             if (x.data[i].visible === undefined || x.data[i].visible === true) {
+               visibleDataIdx.push(i);
+             }
+           }
+           // Look for the index-positions for the traces which are visible
+           var domTraces = Array.prototype.slice.call(el.querySelectorAll('.barlayer .trace'));
+           var domIdx = domTraces.indexOf(trace);
+           if (domIdx > -1 && domIdx < visibleDataIdx.length) {
+             dataIdx = visibleDataIdx[domIdx];
+           }
+         }
+         // Now for the bars
+         var barRects = trace.querySelectorAll('.point');
+         barRects.forEach(function(bar, i) {
+           // Add the correct text, depending on the visible bars (with visibleindex above)
+           var textContent = null;
+           if (dataIdx > -1 && x.data[dataIdx] && x.data[dataIdx].text) {
+             var textArray = x.data[dataIdx].text;
+             if (Array.isArray(textArray)) {
+               textContent = textArray[i];
+             } else {
+               textContent = textArray;
+             }
+           }
+           // Add text, if it is there
+           if (textContent) {
+             bar.setAttribute('data-text', textContent);
+           } else {
+             bar.removeAttribute('data-text');
+           }
+           // Push all bars to the flat array for arrow navigation
+           allBars.push(bar);
+         });
+       });
+
+       // Accessibility: Only the first bar is tabbable, others are only focusable by arrow keys
+       allBars.forEach(function(bar, idx) {
+         if (idx === 0) {
+           bar.setAttribute('tabindex', '0'); // Only first bar is tabbable
+         } else {
+           bar.setAttribute('tabindex', '-1'); // Others are not tabbable, but can be focused programmatically
+         }
+         // Add Aria-labels for accessibility
+         bar.setAttribute('role', 'img');
+         // Get the label from data-text and clean up label for screen readers
+         var label = bar.getAttribute('data-text');
+         if (label) {
+           // Replace the linebreaks with . so that the screenreader sees it as a new sentence
+           // Remove all HTML tags to prevent screen readers from reading them literally
+           var cleanLabel = label.replace(/<br>/gi, '. ').replace(/<[^>]*>/g, '');
+           bar.setAttribute('aria-label', cleanLabel);
+         } else {
+           bar.setAttribute('aria-label', 'Balk');
+         }
+
+         bar.onfocus = function(e) {
+           console.log('=== BAR ONFOCUS TRIGGERED ===');
+           isKeyboardNavigating = true; // Enable keyboard navigation mode
+
+           var rect = bar.getBoundingClientRect(); // Get the position of the bar
+           var content = bar.getAttribute('data-text'); // Get the text of the content
+           console.log('Bar rect:', rect.left, rect.right, rect.top, rect.bottom);
+           console.log('Content:', content);
+
+           tooltip.innerHTML = content || ''; // Display the content
+           tooltip.style.left = (rect.right + 10) + 'px'; // set the position of the tooltip
+           tooltip.style.top = (rect.top - 5) + 'px';
+           tooltip.style.display = content ? 'block' : 'none';
+
+           console.log('Tooltip positioned at:', tooltip.style.left, tooltip.style.top);
+           console.log('Tooltip display:', tooltip.style.display);
+           console.log('Tooltip in DOM?', document.body.contains(tooltip));
+
+           // At high zoom, scroll horizontally to show tooltip
+           var highZoom = isHighZoom();
+           console.log('High zoom?', highZoom);
+
+           if (highZoom && content) {
+             requestAnimationFrame(function() {
+               var tooltipRect = tooltip.getBoundingClientRect();
+               console.log('Viewport width:', window.innerWidth, 'Viewport height:', window.innerHeight);
+
+               // Only scroll if tooltip is offscreen to the right
+               if (tooltipRect.right > window.innerWidth) {
+                 console.log('Tooltip is offscreen to the right, finding scrollable element...');
+                 // Find the scrollable container
+                 var scrollableElement = null;
+                 var parent = el;
+                 while (parent && parent !== document.body) {
+                   var overflowX = window.getComputedStyle(parent).overflowX;
+                   if (overflowX === 'auto' || overflowX === 'scroll') {
+                     scrollableElement = parent;
+                     console.log('Found scrollable element:', parent.tagName, parent.className);
+                     break;
+                   }
+                   parent = parent.parentElement;
+                 }
+
+                 if (scrollableElement) {
+                   var scrollNeeded = tooltipRect.right - window.innerWidth + 20;
+                   console.log('Scrolling by:', scrollNeeded, 'Current scrollLeft:', scrollableElement.scrollLeft);
+                   scrollableElement.scrollLeft += scrollNeeded;
+                   console.log('New scrollLeft:', scrollableElement.scrollLeft);
+
+                   // After scrolling, reposition the tooltip based on new bar position
+                   setTimeout(function() {
+                     var newRect = bar.getBoundingClientRect();
+                     tooltip.style.left = (newRect.right + 10) + 'px';
+                     tooltip.style.top = (newRect.top - 5) + 'px';
+                     console.log('Tooltip repositioned after scroll to:', tooltip.style.left, tooltip.style.top);
+                   }, 100); // Delay to let scroll complete
+                 } else {
+                   console.log('No scrollable element found!');
+                 }
+               } else {
+                 console.log('Tooltip is within viewport, no scroll needed');
+               }
+             });
+           }
+
+           // Show crosshair/spike
+           hidePlotlyHoverlabel(); // Without tooltip label
+
+           // Find dataIdx and i for this bar
+           var barTraceIdx = -1, barPointIdx = -1;
+           for (var ti = 0; ti < traces.length; ti++) {
+             var bars = traces[ti].querySelectorAll('.point');
+             var found = Array.prototype.indexOf.call(bars, bar);
+             if (found > -1) {
+               barTraceIdx = ti;
+               barPointIdx = found;
+               break;
+             }
+           }
+           if (barTraceIdx > -1 && barPointIdx > -1) {
+             Plotly.Fx.hover(el, [
+               { curveNumber: barTraceIdx, pointNumber: barPointIdx }
+             ]);
+           }
+         };
+
+         // Also show tooltip on enter/space and handle keyboard navigation
+         bar.onkeydown = function(e) {
+           // Arrow key navigation between bars
+           if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+             var nextIdx = idx + (e.key === 'ArrowUp' ? 1 : -1);
+             if (nextIdx >= 0 && nextIdx < allBars.length) {
+               allBars[nextIdx].focus();
+             }
+             e.preventDefault();
+           }
+           // Show tooltip/crosshair on Enter or Space
+           if (e.key === 'Enter' || e.key === ' ') {
+             console.log('=== ENTER/SPACE PRESSED ===');
+             isKeyboardNavigating = true; // Enable keyboard navigation mode
+
+             var rect = bar.getBoundingClientRect();
+             var content = bar.getAttribute('data-text');
+             console.log('Bar rect:', rect.left, rect.right, rect.top, rect.bottom);
+             console.log('Content:', content);
+
+             tooltip.innerHTML = content || '';
+             tooltip.style.left = (rect.right + 10) + 'px';
+             tooltip.style.top = (rect.top - 5) + 'px';
+             tooltip.style.display = content ? 'block' : 'none';
+
+             console.log('Tooltip positioned at:', tooltip.style.left, tooltip.style.top);
+             console.log('Tooltip display:', tooltip.style.display);
+
+             // At high zoom, scroll horizontally to show tooltip
+             var highZoom = isHighZoom();
+             console.log('High zoom?', highZoom);
+
+             if (highZoom && content) {
+               requestAnimationFrame(function() {
+                 var tooltipRect = tooltip.getBoundingClientRect();
+
+                 // Only scroll if tooltip is offscreen to the right
+                 if (tooltipRect.right > window.innerWidth) {
+                   console.log('Tooltip is offscreen, scrolling...');
+                   // Find the scrollable container
+                   var scrollableElement = null;
+                   var parent = el;
+                   while (parent && parent !== document.body) {
+                     var overflowX = window.getComputedStyle(parent).overflowX;
+                     if (overflowX === 'auto' || overflowX === 'scroll') {
+                       scrollableElement = parent;
+                       break;
+                     }
+                     parent = parent.parentElement;
+                   }
+
+                   if (scrollableElement) {
+                     var scrollNeeded = tooltipRect.right - window.innerWidth + 20;
+                     scrollableElement.scrollLeft += scrollNeeded;
+                     console.log('Scrolled to:', scrollableElement.scrollLeft);
+
+                     // After scrolling, reposition the tooltip based on new bar position
+                     setTimeout(function() {
+                       var newRect = bar.getBoundingClientRect();
+                       tooltip.style.left = (newRect.right + 10) + 'px';
+                       tooltip.style.top = (newRect.top - 5) + 'px';
+                       console.log('Tooltip repositioned after scroll to:', tooltip.style.left, tooltip.style.top);
+                     }, 100); // Delay to let scroll complete
+                   }
+                 }
+               });
+             }
+
+             // Show crosshair/spike
+             hidePlotlyHoverlabel();
+
+             // Find dataIdx and i for this bar
+             var barTraceIdx = -1, barPointIdx = -1;
+             for (var ti = 0; ti < traces.length; ti++) {
+               var bars = traces[ti].querySelectorAll('.point');
+               var found = Array.prototype.indexOf.call(bars, bar);
+               if (found > -1) {
+                 barTraceIdx = ti;
+                 barPointIdx = found;
+                 break;
+               }
+             }
+             if (barTraceIdx > -1 && barPointIdx > -1) {
+               Plotly.Fx.hover(el, [
+                 { curveNumber: barTraceIdx, pointNumber: barPointIdx }
+               ]);
+             }
+             e.preventDefault();
+           }
+           // Escape the focus on the bars/points when Esc is pressed
+           if (e.key === 'Escape' || e.key === 'Esc') {
+             // Remove tabindex from all bars
+             allBars.forEach(function(b) { b.removeAttribute('tabindex'); });
+
+             // Try to find the next focusable element outside the plot
+             var focusableSelectors = 'a, button, input, textarea, select, details, [tabindex]:not([tabindex=\"-1\"])';
+             var focusableEls = Array.prototype.slice.call(document.querySelectorAll(focusableSelectors))
+             .filter(function(node) { return !node.disabled && node.offsetParent !== null && !el.contains(node); });
+
+             // If there is something to focus on, focus on that
+             if (focusableEls.length > 0) {
+               focusableEls[0].focus();
+               e.preventDefault();
+             } else {
+               // If not, then create a temporary hidden button after the plot and focus it
+               var tempBtn = document.createElement('button');
+               tempBtn.style.position = 'absolute';
+               tempBtn.style.left = '-9999px';
+               tempBtn.tabIndex = 0;
+               tempBtn.setAttribute('aria-label', 'Na de plot');
+               tempBtn.id = 'after-plot-focus-trap';
+               // Remove the button when it loses focus
+               tempBtn.onblur = function() {
+                 setTimeout(function() {
+                   if (tempBtn && tempBtn.parentNode) {
+                     tempBtn.parentNode.removeChild(tempBtn);
+                   }
+                 }, 100);
+               };
+               // Insert after plotly container
+               if (el.parentNode) {
+                 el.parentNode.insertBefore(tempBtn, el.nextSibling);
+               } else {
+                 document.body.appendChild(tempBtn);
+               }
+               tempBtn.focus();
+               e.preventDefault();
+             }
+           }
+         };
+
+         bar.onblur = function(e) {
+           console.log('=== BAR ONBLUR TRIGGERED === Keyboard navigating?', isKeyboardNavigating);
+
+           // Only hide tooltip if we're NOT in keyboard navigation mode
+           if (!isKeyboardNavigating) {
+             hideTooltip();
+           }
+
+           // Delay setting flag to false - if another bar gets focus immediately (arrow keys),
+           // the flag will stay true. Only set to false if we actually leave the chart.
+           setTimeout(function() {
+             // Check if any bar still has focus
+             var anyBarFocused = el.querySelector('.barlayer .point:focus');
+             if (!anyBarFocused) {
+               console.log('No bars focused, disabling keyboard mode');
+               isKeyboardNavigating = false;
+               hideTooltip(); // Hide tooltip when leaving the plot
+             }
+           }, 10);
+
+           showPlotlyHoverlabel(); // Restore tooltip label
+           Plotly.Fx.unhover(el);
+         };
+       }); // end allBars.forEach
+     } // end addBarAccessibility
+
+     addBarAccessibility();
+
+   // Restore bar tabbing only if traces are shown/hidden (e.g., legend interaction)
+    if (typeof(el.on) === 'function') {
+      el.on('plotly_restyle', function() {
+        // Only trigger once filtering is done
+        setTimeout(addBarAccessibility, 0);
+      });
+    }
+
+    // If the mouse is used, and a bar is focused, blur the bar so mouse tooltip works again
+    el.addEventListener('mousemove', function(e) {
+      // Check if mouse actually moved (to distinguish from spurious events during scroll)
+      if (lastMouseX !== null && lastMouseY !== null) {
+        var deltaX = Math.abs(e.clientX - lastMouseX);
+        var deltaY = Math.abs(e.clientY - lastMouseY);
+
+        // If mouse moved more than 5px, it's real movement
+        if (deltaX > 5 || deltaY > 5) {
+          isKeyboardNavigating = false;
+          hideTooltip();
+
+          var focused = el.querySelector('.barlayer .point:focus');
+          if (focused) {
+            focused.blur();
+          }
+        }
+      }
+
+      // Update last mouse position
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    });
+
+    // Handle scrolling: reposition tooltip during keyboard nav, hide during manual scroll
+    var handleScroll = function() {
+      if (isKeyboardNavigating) {
+        // During keyboard navigation, reposition tooltip to stay with the bar
+        var focused = el.querySelector('.barlayer .point:focus');
+        if (focused && tooltip.style.display !== 'none') {
+          var rect = focused.getBoundingClientRect();
+          tooltip.style.left = rect.right + 10 + 'px';
+          tooltip.style.top = rect.top - 5 + 'px';
+        }
+      } else {
+        // Manual scrolling: hide tooltip and blur
+        hideTooltip();
+        var focused = el.querySelector('.barlayer .point:focus');
+        if (focused) {
+          focused.blur();
+        }
+      }
+    };
+
+    // Listen for page scroll
+    window.addEventListener('scroll', handleScroll, true);
+
+    // Listen for scroll on the plot container and its ancestors
+    var scrollParent = el;
+    while (scrollParent) {
+      scrollParent.addEventListener('scroll', handleScroll);
+      scrollParent = scrollParent.parentElement;
+    }
+   }
+   ")
+
+  return(fig2)
+
+}
+
+
+#' Improve keyboard accessibility for (stacked) bar graphs in plotly/ggplotly
+#'
+#' `r ROvis.utils::ro_group_badge('toegankelijkheid')`
+#'
+#' Enhances the accessibility of interactive horizontal bar charts created with \code{plotly} or \code{ggplotly}.
+#' This function injects custom JavaScript to make bar elements focusable and navigable via keyboard,
+#' displays accessible tooltips, and ensures screen readers can interpret the chart. The function is
+#' intended for use on \code{plotly} bar graphs (including those created with \code{ggplotly}).
+#'
+#' Keyboard navigation: users can use Tab to focus the first bar, and arrow keys (Up/Down/Left/Right)
+#' to move between bars. Pressing Esc removes focus from the chart and returns focus
+#' to the next logical element.
+#'
+#' This function works for:
+#' \itemize{
+#'   \item Standard (vertical) bar graphs
+#'   \item Stacked bar graphs
+#'   \item Grouped/dodged bar graphs
+#'   \item Proportional stacked bar graphs (bars with proportions)
+#' }
+#'
+#' Not suitable for: \itemize{
+#'   \item Horizontal barcharts
+#' }
+#'
+#' @param fig A \code{plotly} object (from \code{plotly::plot_ly()} or \code{plotly::ggplotly()}).
+#' @seealso \code{\link{ro_ply_keyboard_nav_barchart}}
+#' @return A \code{plotly} object with improved keyboard accessibility.
+#' @family ggplotly
+#' @family plotly
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' library(ggplot2)
+#' library(plotly)
+#' data <- tidyr::tibble(
+#'   Sex = factor(c("Vrouw", "Man"), levels = c("Vrouw", "Man")),
+#'   n = sample(1e6:5e6, 2)
+#' )
+#' p <- ggplot(data, aes(x = Sex, y = n, fill = Sex,
+#'                       text = paste0(
+#'                         "Geslacht: <b>", Sex, "</b>",
+#'                         "</b><br>Aantal cases: <b>",
+#'                         format(round(n, 0),
+#'                         big.mark = ".", decimal.mark = ",",
+#'                         scientific = FALSE), "</b>"
+#'                       ))) +
+#'   geom_col(width = 0.6) +
+#'   labs(x = "Geslacht", y = "Aantal cases") +
+#'   theme_minimal()
+#' fig <- ggplotly(p, tooltip = "text")
+#' fig <- ro_ply_keyboard_nav_bargraph(fig)
+#' fig
+#' }
+
+ro_ply_keyboard_nav_bargraph <- function(fig) {
+  # Add a java-script so that the tooltip is accessible with the keyboard
+  fig2 <- onRender(fig, "
    function(el, x) {
      // Helper to hide Plotly hover label
      function hidePlotlyHoverlabel() {
@@ -205,19 +744,110 @@ ro_ply_keyboard_nav_barchart <- function(fig) {
          var label = bar.getAttribute('data-text');
          if (label) {
            // Replace the linebreaks with . so that the screenreader sees it as a new sentence
-           var cleanLabel = label.replace(/<br>/g, '. ');
+           // Remove all HTML tags to prevent screen readers from reading them literally
+           var cleanLabel = label.replace(/<br>/gi, '. ').replace(/<[^>]*>/g, '');
            bar.setAttribute('aria-label', cleanLabel);
          } else {
-           bar.setAttribute('aria-label', 'Bar');
+           bar.setAttribute('aria-label', 'Balk');
          }
 
          bar.onfocus = function(e) {
+           console.log('=== BAR ONFOCUS TRIGGERED ===');
+           isKeyboardNavigating = true; // Enable keyboard navigation mode
+
            var rect = bar.getBoundingClientRect(); // Get the position of the bar
            var content = bar.getAttribute('data-text'); // Get the text of the content
+           console.log('Bar rect:', rect.left, rect.right, rect.top, rect.bottom);
+           console.log('Content:', content);
+
            tooltip.innerHTML = content || ''; // Display the content
            tooltip.style.left = (rect.right + 10) + 'px'; // set the position of the tooltip
            tooltip.style.top = (rect.top - 5) + 'px';
            tooltip.style.display = content ? 'block' : 'none';
+
+           console.log('Tooltip positioned at:', tooltip.style.left, tooltip.style.top);
+           console.log('Tooltip display:', tooltip.style.display);
+           console.log('Tooltip in DOM?', document.body.contains(tooltip));
+
+           // At high zoom, scroll horizontally to show tooltip
+           var highZoom = isHighZoom();
+           console.log('High zoom?', highZoom);
+
+           if (highZoom && content) {
+             requestAnimationFrame(function() {
+               var barRect = bar.getBoundingClientRect();
+               var tooltipRect = tooltip.getBoundingClientRect();
+               console.log('Bar BoundingRect:', barRect.left, barRect.right, barRect.top, barRect.bottom);
+               console.log('Viewport width:', window.innerWidth, 'Viewport height:', window.innerHeight);
+
+               // For vertical bars: scroll if tooltip is offscreen to the right OR bar is offscreen to the left
+               if (tooltipRect.right > window.innerWidth) {
+                 console.log('Tooltip is offscreen to the right, finding scrollable element...');
+                 // Find the scrollable container
+                 var scrollableElement = null;
+                 var parent = el;
+                 while (parent && parent !== document.body) {
+                   var overflowX = window.getComputedStyle(parent).overflowX;
+                   if (overflowX === 'auto' || overflowX === 'scroll') {
+                     scrollableElement = parent;
+                     console.log('Found scrollable element:', parent.tagName, parent.className);
+                     break;
+                   }
+                   parent = parent.parentElement;
+                 }
+
+                 if (scrollableElement) {
+                   var scrollNeeded = tooltipRect.right - window.innerWidth + 20;
+                   console.log('Scrolling by:', scrollNeeded, 'Current scrollLeft:', scrollableElement.scrollLeft);
+                   scrollableElement.scrollLeft += scrollNeeded;
+                   console.log('New scrollLeft:', scrollableElement.scrollLeft);
+
+                   // After scrolling, reposition the tooltip based on new bar position
+                   setTimeout(function() {
+                     var newRect = bar.getBoundingClientRect();
+                     tooltip.style.left = (newRect.right + 10) + 'px';
+                     tooltip.style.top = (newRect.top - 5) + 'px';
+                     console.log('Tooltip repositioned after scroll to:', tooltip.style.left, tooltip.style.top);
+                   }, 100); // Delay to let scroll complete
+                 } else {
+                   console.log('No scrollable element found!');
+                 }
+               } else if (barRect.left < 0) {
+                 console.log('Bar is offscreen to the left, finding scrollable element...');
+                 // Find the scrollable container
+                 var scrollableElement = null;
+                 var parent = el;
+                 while (parent && parent !== document.body) {
+                   var overflowX = window.getComputedStyle(parent).overflowX;
+                   if (overflowX === 'auto' || overflowX === 'scroll') {
+                     scrollableElement = parent;
+                     console.log('Found scrollable element:', parent.tagName, parent.className);
+                     break;
+                   }
+                   parent = parent.parentElement;
+                 }
+
+                 if (scrollableElement) {
+                   var scrollNeeded = barRect.left - 20; // negative value
+                   console.log('Scrolling by:', scrollNeeded, 'Current scrollLeft:', scrollableElement.scrollLeft);
+                   scrollableElement.scrollLeft += scrollNeeded;
+                   console.log('New scrollLeft:', scrollableElement.scrollLeft);
+
+                   // After scrolling, reposition the tooltip based on new bar position
+                   setTimeout(function() {
+                     var newRect = bar.getBoundingClientRect();
+                     tooltip.style.left = (newRect.right + 10) + 'px';
+                     tooltip.style.top = (newRect.top - 5) + 'px';
+                     console.log('Tooltip repositioned after scroll to:', tooltip.style.left, tooltip.style.top);
+                   }, 100); // Delay to let scroll complete
+                 } else {
+                   console.log('No scrollable element found!');
+                 }
+               } else {
+                 console.log('Tooltip is within viewport, no scroll needed');
+               }
+             });
+           }
 
            // Show crosshair/spike
            hidePlotlyHoverlabel(); // Without tooltip label
@@ -242,8 +872,8 @@ ro_ply_keyboard_nav_barchart <- function(fig) {
          // Also show tooltip on enter/space and handle keyboard navigation
          bar.onkeydown = function(e) {
            // Arrow key navigation between bars
-           if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-             var nextIdx = idx + (e.key === 'ArrowUp' ? 1 : -1);
+           if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+             var nextIdx = idx + (e.key === 'ArrowRight' ? 1 : -1);
              if (nextIdx >= 0 && nextIdx < allBars.length) {
                allBars[nextIdx].focus();
              }
@@ -251,12 +881,92 @@ ro_ply_keyboard_nav_barchart <- function(fig) {
            }
            // Show tooltip/crosshair on Enter or Space
            if (e.key === 'Enter' || e.key === ' ') {
+             console.log('=== ENTER/SPACE PRESSED ===');
+             isKeyboardNavigating = true; // Enable keyboard navigation mode
+
              var rect = bar.getBoundingClientRect();
              var content = bar.getAttribute('data-text');
+             console.log('Bar rect:', rect.left, rect.right, rect.top, rect.bottom);
+             console.log('Content:', content);
+
              tooltip.innerHTML = content || '';
              tooltip.style.left = (rect.right + 10) + 'px';
              tooltip.style.top = (rect.top - 5) + 'px';
              tooltip.style.display = content ? 'block' : 'none';
+
+             console.log('Tooltip positioned at:', tooltip.style.left, tooltip.style.top);
+             console.log('Tooltip display:', tooltip.style.display);
+
+             // At high zoom, scroll horizontally to show tooltip
+             var highZoom = isHighZoom();
+             console.log('High zoom?', highZoom);
+
+             if (highZoom && content) {
+               requestAnimationFrame(function() {
+                 var barRect = bar.getBoundingClientRect();
+                 var tooltipRect = tooltip.getBoundingClientRect();
+                 console.log('Bar BoundingRect:', barRect.left, barRect.right, barRect.top, barRect.bottom);
+
+
+                 // For vertical bars: scroll if tooltip is offscreen to the right OR bar is offscreen to the left
+                 if (tooltipRect.right > window.innerWidth) {
+                   console.log('Tooltip is offscreen, scrolling...');
+                   // Find the scrollable container
+                   var scrollableElement = null;
+                   var parent = el;
+                   while (parent && parent !== document.body) {
+                     var overflowX = window.getComputedStyle(parent).overflowX;
+                     if (overflowX === 'auto' || overflowX === 'scroll') {
+                       scrollableElement = parent;
+                       break;
+                     }
+                     parent = parent.parentElement;
+                   }
+
+                   if (scrollableElement) {
+                     var scrollNeeded = tooltipRect.right - window.innerWidth + 20;
+                     scrollableElement.scrollLeft += scrollNeeded;
+                     console.log('Scrolled to:', scrollableElement.scrollLeft);
+
+                     // After scrolling, reposition the tooltip based on new bar position
+                     setTimeout(function() {
+                       var newRect = bar.getBoundingClientRect();
+                       tooltip.style.left = (newRect.right + 10) + 'px';
+                       tooltip.style.top = (newRect.top - 5) + 'px';
+                       console.log('Tooltip repositioned after scroll to:', tooltip.style.left, tooltip.style.top);
+                     }, 100); // Delay to let scroll complete
+                   }
+                 } else if (barRect.left < 0) {
+                   console.log('Bar is offscreen to the left, scrolling...');
+                   // Find the scrollable container
+                   var scrollableElement = null;
+                   var parent = el;
+                   while (parent && parent !== document.body) {
+                     var overflowX = window.getComputedStyle(parent).overflowX;
+                     if (overflowX === 'auto' || overflowX === 'scroll') {
+                       scrollableElement = parent;
+                       break;
+                     }
+                     parent = parent.parentElement;
+                   }
+
+                   if (scrollableElement) {
+                     var scrollNeeded = barRect.left - 20; // negative value
+                     scrollableElement.scrollLeft += scrollNeeded;
+                     console.log('Scrolled to:', scrollableElement.scrollLeft);
+
+                     // After scrolling, reposition the tooltip based on new bar position
+                     setTimeout(function() {
+                       var newRect = bar.getBoundingClientRect();
+                       tooltip.style.left = (newRect.right + 10) + 'px';
+                       tooltip.style.top = (newRect.top - 5) + 'px';
+                       console.log('Tooltip repositioned after scroll to:', tooltip.style.left, tooltip.style.top);
+                     }, 100); // Delay to let scroll complete
+                   }
+                 }
+               });
+             }
+
              // Show crosshair/spike
              hidePlotlyHoverlabel();
              // Find dataIdx and i for this bar
@@ -320,7 +1030,25 @@ ro_ply_keyboard_nav_barchart <- function(fig) {
          };
 
          bar.onblur = function(e) {
-           hideTooltip();
+           console.log('=== BAR ONBLUR TRIGGERED === Keyboard navigating?', isKeyboardNavigating);
+
+           // Only hide tooltip if we're NOT in keyboard navigation mode
+           if (!isKeyboardNavigating) {
+             hideTooltip();
+           }
+
+           // Delay setting flag to false - if another bar gets focus immediately (arrow keys),
+           // the flag will stay true. Only set to false if we actually leave the chart.
+           setTimeout(function() {
+             // Check if any bar still has focus
+             var anyBarFocused = el.querySelector('.barlayer .point:focus');
+             if (!anyBarFocused) {
+               console.log('No bars focused, disabling keyboard mode');
+               isKeyboardNavigating = false;
+               hideTooltip(); // Hide tooltip when leaving the plot
+             }
+           }, 10);
+
            showPlotlyHoverlabel(); // Restore tooltip label
            Plotly.Fx.unhover(el);
          };
@@ -344,287 +1072,9 @@ ro_ply_keyboard_nav_barchart <- function(fig) {
         focused.blur();
       }
     });
-
-    // Force only the first bar to be tabbable after Plotly's own accessibility logic runs
-setTimeout(function() {
-  allBars.forEach(function(bar, idx) {
-    bar.setAttribute('tabindex', idx === 0 ? '0' : '-1');
-  });
-}, 10);
-
    }
-   "
-  )
-  return(fig2)
-}
+   ")
 
-
-#' Improve keyboard accessibility for (stacked) bar graphs in plotly/ggplotly
-#'
-#' `r ROvis.utils::ro_group_badge('toegankelijkheid')`
-#'
-#' Enhances the accessibility of interactive horizontal bar charts created with \code{plotly} or \code{ggplotly}.
-#' This function injects custom JavaScript to make bar elements focusable and navigable via keyboard,
-#' displays accessible tooltips, and ensures screen readers can interpret the chart. The function is
-#' intended for use on \code{plotly} bar graphs (including those created with \code{ggplotly}).
-#'
-#' Keyboard navigation: users can use Tab to focus the first bar, and arrow keys (Up/Down/Left/Right)
-#' to move between bars. Pressing Esc removes focus from the chart and returns focus
-#' to the next logical element.
-#'
-#' This function works for:
-#' \itemize{
-#'   \item Standard (vertical) bar graphs
-#'   \item Stacked bar graphs
-#'   \item Grouped/dodged bar graphs
-#'   \item Proportional stacked bar graphs (bars with proportions)
-#' }
-#'
-#' Not suitable for: \itemize{
-#'   \item Horizontal barcharts
-#' }
-#'
-#' @param fig A \code{plotly} object (from \code{plotly::plot_ly()} or \code{plotly::ggplotly()}).
-#' @seealso \code{\link{ro_ply_keyboard_nav_barchart}}
-#' @return A \code{plotly} object with improved keyboard accessibility.
-#' @family ggplotly
-#' @family plotly
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' library(ggplot2)
-#' library(plotly)
-#' data <- tidyr::tibble(
-#'   Sex = factor(c("Vrouw", "Man"), levels = c("Vrouw", "Man")),
-#'   n = sample(1e6:5e6, 2)
-#' )
-#' p <- ggplot(data, aes(x = Sex, y = n, fill = Sex,
-#'                       text = paste0(
-#'                         "Geslacht: <b>", Sex, "</b>",
-#'                         "</b><br>Aantal cases: <b>",
-#'                         format(round(n, 0),
-#'                         big.mark = ".", decimal.mark = ",",
-#'                         scientific = FALSE), "</b>"
-#'                       ))) +
-#'   geom_col(width = 0.6) +
-#'   labs(x = "Geslacht", y = "Aantal cases") +
-#'   theme_minimal()
-#' fig <- ggplotly(p, tooltip = "text")
-#' fig <- ro_ply_keyboard_nav_bargraph(fig)
-#' fig
-#' }
-
-ro_ply_keyboard_nav_bargraph <- function(fig) {
-  fig2 <- onRender(
-    fig,
-    "
-function(el, x) {
-  // First two functions to add or remove the tooltip/hoverlabel, as the crosshair/spike also creates a tooltip
-  // Helper function to hide hoverlabel/tooltip
-  function hidePlotlyHoverlabel() {
-    if (!document.getElementById('plotly-hide-hoverlabel-style-temp')) {
-      var style = document.createElement('style');
-      style.id = 'plotly-hide-hoverlabel-style-temp';
-      style.innerHTML = '.hoverlayer .hovertext { display: none !important; }';
-      document.head.appendChild(style);
-    }
-  }
-
-  // Helper function to show hoverlabel again/tooltip
-  function showPlotlyHoverlabel() {
-    var style = document.getElementById('plotly-hide-hoverlabel-style-temp');
-    if (style) {
-      style.parentNode.removeChild(style);
-    }
-  }
-
-  // Create a div for the custom tooltip if not already present
-  if (!document.getElementById('custom-plotly-tooltip')) { // Check if the tooltip div is already on the page
-    var tooltip = document.createElement('div'); // Make a new div
-    tooltip.id = 'custom-plotly-tooltip';
-    tooltip.style.position = 'fixed';
-    tooltip.style.lineHeight = '1.3'; // Space between lines similar between mouse tooltip and keyboard tooltip
-    tooltip.style.pointerEvents = 'none'; // Doesn't interfere with the mouse tooltip
-    tooltip.style.zIndex = 99999; // Tooltip is on top
-    tooltip.style.display = 'none'; // Hidden by default
-    tooltip.style.padding = '1px 2px'; // Padding similar to the mouse tool-tip
-    // RIVM huisstijl
-    tooltip.style.background = '#ffffff';
-    tooltip.style.color = '#000000';
-    tooltip.style.borderRadius = '0';
-    tooltip.style.fontSize = '13px';
-    tooltip.style.fontFamily = 'Arial, sans-serif';
-    tooltip.style.fontStyle = 'normal';
-    tooltip.style.fontWeight = 'normal';
-    tooltip.style.textAlign = 'left';
-    tooltip.style.border = '1px solid #000000';
-    tooltip.style.boxShadow = 'none';
-    document.body.appendChild(tooltip); // Add the tooltip to the page
-  }
-  var tooltip = document.getElementById('custom-plotly-tooltip');
-
-  // Function to hide the tool-tip
-  function hideTooltip() {
-    tooltip.style.display = 'none';
-  }
-
-  // Hide the keyboard tooltip if the mouse tooltip is used
-  document.addEventListener('mousedown', hideTooltip);
-  el.on('plotly_hover', hideTooltip);
-
-  // Function to add to each bar, regardless of filtering, that it can be accessed with the keyboard
-  function addBarAccessibility() {
-    var bars = []; // Collect all bars in one array for arrow-key navigation
-    // Look for all traces within the barchart, in this case Men and Women
-    var traces = el.querySelectorAll('.barlayer .trace');
-    // Loop over all categories/traces
-    traces.forEach(function(trace) {
-      // Look for the index, corresponding to the name of the trace
-      var traceName = trace.getAttribute('data-name');
-      var dataIdx = -1;
-      if (traceName && x && x.data) {
-        for (var di = 0; di < x.data.length; di++) {
-          if (x.data[di].name == traceName) {
-            dataIdx = di;
-            break;
-          }
-        }
-      }
-       // Make a list of traces which are found, and thus visible and not filtered
-      if (dataIdx === -1 && x && x.data) {
-        var visibleDataIdx = [];
-        for (var i = 0; i < x.data.length; i++) {
-          if (x.data[i].visible === undefined || x.data[i].visible === true) {
-            visibleDataIdx.push(i);
-          }
-        }
-        // Look for the index-positions for the traces which are visible
-        var domTraces = Array.prototype.slice.call(el.querySelectorAll('.barlayer .trace'));
-        var domIdx = domTraces.indexOf(trace);
-        if (domIdx > -1 && domIdx < visibleDataIdx.length) {
-          dataIdx = visibleDataIdx[domIdx];
-        }
-      }
-      // Now for the bars
-      var barRects = trace.querySelectorAll('.point');
-      barRects.forEach(function(bar, i) {
-        // Add the correct text, depending on the visible bars (with visibleindex above)
-        var textContent = null;
-        if (dataIdx > -1 && x.data[dataIdx] && x.data[dataIdx].text) {
-          var textArray = x.data[dataIdx].text;
-          if (Array.isArray(textArray)) {
-            textContent = textArray[i];
-          } else {
-            textContent = textArray;
-          }
-        }
-        // Add text, if it is there
-        if (textContent) {
-          bar.setAttribute('data-text', textContent);
-        } else {
-          bar.removeAttribute('data-text');
-        }
-        // Collect all bars in a single array for arrow navigation
-        bars.push(bar);
-        // By default, make all bars NOT tabbable (only the first will be)
-        bar.setAttribute('tabindex', -1);
-        // Add Aria-labels for accessibility
-        bar.setAttribute('role', 'img');
-        // Get the label from data-text and clean up label for screen readers
-        var label = bar.getAttribute('data-text');
-        if (label) {
-          // Replace the linebreaks with . so that the screenreader sees it as a new sentence
-          var cleanLabel = label.replace(/<br>/g, '. ');
-          bar.setAttribute('aria-label', cleanLabel);
-        } else {
-          bar.setAttribute('aria-label', 'Bar');
-        }
-
-        // Show tooltip on focus (tab on keyboard)
-        bar.onfocus = function(e) {
-          var rect = bar.getBoundingClientRect();  // Get the position of the bar
-          var content = bar.getAttribute('data-text'); // Get the text of the content
-          tooltip.innerHTML = content || ''; // Display the content
-          tooltip.style.left = (rect.right + 10) + 'px'; // set the position of the tooltip
-          tooltip.style.top = (rect.top - 5) + 'px';
-          tooltip.style.display = content ? 'block' : 'none';
-          // Show crosshair/spike
-          hidePlotlyHoverlabel(); // Without tooltip label
-          Plotly.Fx.hover(el, [
-            { curveNumber: dataIdx, pointNumber: i }
-          ]);
-        };
-
-        // Also show tooltip on enter/space, and enable arrow navigation
-        bar.onkeydown = function(e) {
-          // Enter/Space = show tooltip
-          if (e.key === 'Enter' || e.key === ' ') {
-            var rect = bar.getBoundingClientRect();
-            var content = bar.getAttribute('data-text');
-            tooltip.innerHTML = content || '';
-            tooltip.style.left = (rect.right + 10) + 'px';
-            tooltip.style.top = (rect.top - 5) + 'px';
-            tooltip.style.display = content ? 'block' : 'none';
-
-            // Show crosshair/spike
-            hidePlotlyHoverlabel(); // Without tooltip label
-            Plotly.Fx.hover(el, [
-              { curveNumber: dataIdx, pointNumber: i }
-            ]);
-            e.preventDefault();
-          }
-          // Arrow key navigation (right/down/left/up)
-          if (
-            e.key === 'ArrowDown' || e.key === 'ArrowRight' ||
-            e.key === 'ArrowUp'   || e.key === 'ArrowLeft'
-          ) {
-            e.preventDefault();
-            // Find current position in bars array
-            var idx = bars.indexOf(bar);
-            var nextIdx = idx;
-            if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
-              nextIdx = (idx + 1) % bars.length;
-            } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
-              nextIdx = (idx - 1 + bars.length) % bars.length;
-            }
-            // Move focus to the next bar
-            bars[nextIdx].focus();
-          }
-        };
-
-        // Hide the tooltip when no longer focused
-        bar.onblur = function(e) {
-          hideTooltip();
-          showPlotlyHoverlabel(); // Without tooltip label
-          Plotly.Fx.unhover(el);
-        };
-      });
-    });
-
-    // Make only the first bar tabbable
-    if (bars.length > 0) {
-      bars[0].setAttribute('tabindex', 0);
-    }
-    // All other bars: tabindex -1 (only reachable by arrow keys)
-    for (var k = 1; k < bars.length; k++) {
-      bars[k].setAttribute('tabindex', -1);
-    }
-  }
-
-  // Apply the function above
-  addBarAccessibility();
-
-  // Trigger the function if the filtering in the legend is used, as this changes the visible bars
-  if (typeof(el.on) === 'function') {
-    el.on('plotly_restyle', function() {
-      // Only trigger once filtering is done
-      setTimeout(addBarAccessibility, 0);
-    });
-  }
-}
-"
-  )
 
   return(fig2)
 }
@@ -685,7 +1135,7 @@ function(el, x) {
 
 ro_ply_keyboard_nav_trendline <- function(fig) {
   # Add custom Javascript to make the points and lines accessible with the keyboard
-  fig2 <-
+  fig2  <-
     onRender(
       fig,
       "
@@ -717,6 +1167,11 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
         }
         var tooltip = document.getElementById('custom-plotly-tooltip');
 
+        // Track keyboard navigation mode
+        var isKeyboardNavigating = false;
+        var lastMouseX = null;
+        var lastMouseY = null;
+
         // function to hide the tooltip
         function hideTooltip() {
           tooltip.style.display = 'none';
@@ -725,6 +1180,71 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
         // ensure clicking in plot and hovering over other point hides tooltip
         document.addEventListener('mousedown', hideTooltip);
         el.on('plotly_hover', hideTooltip);
+
+        // Function to auto-scroll if tooltip goes offscreen during keyboard navigation
+        function autoScrollTooltip() {
+          if (isKeyboardNavigating) {
+            requestAnimationFrame(function() {
+              var tooltipRect = tooltip.getBoundingClientRect();
+
+              // Scroll if tooltip is offscreen to the right
+              if (tooltipRect.right > window.innerWidth) {
+                var scrollableElement = null;
+                var parent = el;
+                while (parent && parent !== document.body) {
+                  var overflowX = window.getComputedStyle(parent).overflowX;
+                  if (overflowX === 'auto' || overflowX === 'scroll') {
+                    scrollableElement = parent;
+                    break;
+                  }
+                  parent = parent.parentElement;
+                }
+
+                if (scrollableElement) {
+                  var scrollNeeded = tooltipRect.right - window.innerWidth + 20;
+                  scrollableElement.scrollLeft += scrollNeeded;
+
+                  // After scrolling, reposition the tooltip
+                  setTimeout(function() {
+                    var focusedPt = el.querySelector('.scatterlayer .point:focus');
+                    if (focusedPt) {
+                      var newRect = focusedPt.getBoundingClientRect();
+                      tooltip.style.left = (newRect.right + 10) + 'px';
+                      tooltip.style.top = (newRect.top - 5) + 'px';
+                    }
+                  }, 100);
+                }
+              } else if (tooltipRect.left < 0) {
+                // Scroll if tooltip is offscreen to the left
+                var scrollableElement = null;
+                var parent = el;
+                while (parent && parent !== document.body) {
+                  var overflowX = window.getComputedStyle(parent).overflowX;
+                  if (overflowX === 'auto' || overflowX === 'scroll') {
+                    scrollableElement = parent;
+                    break;
+                  }
+                  parent = parent.parentElement;
+                }
+
+                if (scrollableElement) {
+                  var scrollNeeded = tooltipRect.left - 20; // negative value
+                  scrollableElement.scrollLeft += scrollNeeded;
+
+                  // After scrolling, reposition the tooltip
+                  setTimeout(function() {
+                    var focusedPt = el.querySelector('.scatterlayer .point:focus');
+                    if (focusedPt) {
+                      var newRect = focusedPt.getBoundingClientRect();
+                      tooltip.style.left = (newRect.right + 10) + 'px';
+                      tooltip.style.top = (newRect.top - 5) + 'px';
+                    }
+                  }, 100);
+                }
+              }
+            });
+          }
+        }
 
         // function to add to each point, regardless of the filtering of the categories,
         // so that it can be accessed with the keyboard
@@ -829,7 +1349,8 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
             var label = pt.getAttribute('data-text');
             if (label) {
               // replace the linebreaks with . so that the screenreader sees it as a new sentence
-              var cleanLabel = label.replace(/<br>/g, '. ');
+              // Remove all HTML tags to prevent screen readers from reading them literally
+              var cleanLabel = label.replace(/<br\\s*\\/?>/gi, '. ').replace(/<[^>]*>/g, '');
               pt.setAttribute('aria-label', cleanLabel);
             } else {
               pt.setAttribute('aria-label', 'Datapunt');
@@ -837,34 +1358,40 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
 
             // show the tooltip when focused with tab on the keyboard
             pt.onfocus = function(e) {
+              isKeyboardNavigating = true;
               var rect = pt.getBoundingClientRect();
               var content = pt.getAttribute('data-text');
               tooltip.innerHTML = content || '';
               tooltip.style.left = (rect.right + 10) + 'px';
               tooltip.style.top = (rect.top - 5) + 'px';
               tooltip.style.display = content ? 'block' : 'none';
+              autoScrollTooltip();
             };
 
             // and show/hide/navigate with keyboard
             pt.onkeydown = function(e) {
               // Show the tooltip with enter or space
               if (e.key === 'Enter' || e.key === ' ') {
+                isKeyboardNavigating = true;
                 var rect = pt.getBoundingClientRect();
                 var content = pt.getAttribute('data-text');
                 tooltip.innerHTML = content || '';
                 tooltip.style.left = (rect.right + 10) + 'px';
                 tooltip.style.top = (rect.top - 5) + 'px';
                 tooltip.style.display = content ? 'block' : 'none';
+                autoScrollTooltip();
                 e.preventDefault();
               }
               // Use the arrows to navigate through the points
               if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                isKeyboardNavigating = true;
                 if (ptIdx < allPoints.length - 1) {
                   allPoints[ptIdx + 1].focus();
                 }
                 e.preventDefault();
               }
               if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                isKeyboardNavigating = true;
                 if (ptIdx > 0) {
                   allPoints[ptIdx - 1].focus();
                 }
@@ -880,6 +1407,15 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
 
             // hide the tooltip when no longer focused
             pt.onblur = function(e) {
+              // Delay setting flag to false - if another point gets focus immediately,
+              // the flag will stay true. Only set to false if we actually leave the chart.
+              setTimeout(function() {
+                var anyPointFocused = el.querySelector('.scatterlayer .point:focus');
+                if (!anyPointFocused) {
+                  isKeyboardNavigating = false;
+                  hideTooltip();
+                }
+              }, 10);
               tooltip.style.display = 'none';
             };
           });
@@ -894,6 +1430,60 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
           el.on('plotly_restyle', function() {
             setTimeout(addPointAccessibility, 0);
           });
+        }
+
+        // If the mouse is used, blur the focused point so mouse tooltip works again
+        el.addEventListener('mousemove', function(e) {
+          // Check if mouse actually moved (to distinguish from spurious events during scroll)
+          if (lastMouseX !== null && lastMouseY !== null) {
+            var deltaX = Math.abs(e.clientX - lastMouseX);
+            var deltaY = Math.abs(e.clientY - lastMouseY);
+
+            // If mouse moved more than 5px, it's real movement
+            if (deltaX > 5 || deltaY > 5) {
+              isKeyboardNavigating = false;
+              hideTooltip();
+
+              var focused = el.querySelector('.scatterlayer .point:focus');
+              if (focused) {
+                focused.blur();
+              }
+            }
+          }
+
+          // Update last mouse position
+          lastMouseX = e.clientX;
+          lastMouseY = e.clientY;
+        });
+
+        // Handle scrolling: reposition tooltip during keyboard nav, hide during manual scroll
+        var handleScroll = function() {
+          if (isKeyboardNavigating) {
+            // During keyboard navigation, reposition tooltip to stay with the point
+            var focused = el.querySelector('.scatterlayer .point:focus');
+            if (focused && tooltip.style.display !== 'none') {
+              var rect = focused.getBoundingClientRect();
+              tooltip.style.left = (rect.right + 10) + 'px';
+              tooltip.style.top = (rect.top - 5) + 'px';
+            }
+          } else {
+            // Manual scrolling: hide tooltip and blur
+            hideTooltip();
+            var focused = el.querySelector('.scatterlayer .point:focus');
+            if (focused) {
+              focused.blur();
+            }
+          }
+        };
+
+        // Listen for page scroll
+        window.addEventListener('scroll', handleScroll, true);
+
+        // Listen for scroll on the plot container and its ancestors
+        var scrollParent = el;
+        while (scrollParent) {
+          scrollParent.addEventListener('scroll', handleScroll);
+          scrollParent = scrollParent.parentElement;
         }
       }
     "
@@ -944,7 +1534,7 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
 #' fig
 #' }
 ro_ply_keyboard_nav_linechart <- function(fig) {
-  fig2 <- onRender(
+  fig2 <- htmlwidgets::onRender(
     fig,
     "
     function(el, x) {
@@ -965,6 +1555,11 @@ ro_ply_keyboard_nav_linechart <- function(fig) {
       }
       var tooltip = document.getElementById('custom-plotly-tooltip');
       function hideTooltip() { tooltip.style.display = 'none'; }
+
+      // Track keyboard navigation mode
+      var isKeyboardNavigating = false;
+      var lastMouseX = null;
+      var lastMouseY = null;
 
       // Utility: data to SVG
       function dataToSVG(trace, pointIndex) {
@@ -1026,6 +1621,79 @@ ro_ply_keyboard_nav_linechart <- function(fig) {
           tooltip.style.left = (transformed.x + 12) + 'px';
           tooltip.style.top = (transformed.y - 8) + 'px';
           tooltip.style.display = 'block';
+
+          // Auto-scroll horizontally to show tooltip if it goes offscreen
+          if (isKeyboardNavigating) {
+            requestAnimationFrame(function() {
+              var tooltipRect = tooltip.getBoundingClientRect();
+
+              // Scroll if tooltip is offscreen to the right
+              if (tooltipRect.right > window.innerWidth) {
+                // Find the scrollable container
+                var scrollableElement = null;
+                var parent = el;
+                while (parent && parent !== document.body) {
+                  var overflowX = window.getComputedStyle(parent).overflowX;
+                  if (overflowX === 'auto' || overflowX === 'scroll') {
+                    scrollableElement = parent;
+                    break;
+                  }
+                  parent = parent.parentElement;
+                }
+
+                if (scrollableElement) {
+                  var scrollNeeded = tooltipRect.right - window.innerWidth + 20;
+                  scrollableElement.scrollLeft += scrollNeeded;
+
+                  // After scrolling, reposition the tooltip based on new position
+                  setTimeout(function() {
+                    var newCoords = dataToSVG(trace, index);
+                    if (newCoords && svg) {
+                      var newPt = svg.createSVGPoint();
+                      newPt.x = +newCoords.cx;
+                      newPt.y = +newCoords.cy;
+                      var newScreenCTM = svg.getScreenCTM();
+                      var newTransformed = newPt.matrixTransform(newScreenCTM);
+                      tooltip.style.left = (newTransformed.x + 12) + 'px';
+                      tooltip.style.top = (newTransformed.y - 8) + 'px';
+                    }
+                  }, 100); // Delay to let scroll complete
+                }
+              } else if (tooltipRect.left < 0) {
+                // Scroll if tooltip is offscreen to the left
+                // Find the scrollable container
+                var scrollableElement = null;
+                var parent = el;
+                while (parent && parent !== document.body) {
+                  var overflowX = window.getComputedStyle(parent).overflowX;
+                  if (overflowX === 'auto' || overflowX === 'scroll') {
+                    scrollableElement = parent;
+                    break;
+                  }
+                  parent = parent.parentElement;
+                }
+
+                if (scrollableElement) {
+                  var scrollNeeded = tooltipRect.left - 20; // negative value
+                  scrollableElement.scrollLeft += scrollNeeded;
+
+                  // After scrolling, reposition the tooltip based on new position
+                  setTimeout(function() {
+                    var newCoords = dataToSVG(trace, index);
+                    if (newCoords && svg) {
+                      var newPt = svg.createSVGPoint();
+                      newPt.x = +newCoords.cx;
+                      newPt.y = +newCoords.cy;
+                      var newScreenCTM = svg.getScreenCTM();
+                      var newTransformed = newPt.matrixTransform(newScreenCTM);
+                      tooltip.style.left = (newTransformed.x + 12) + 'px';
+                      tooltip.style.top = (newTransformed.y - 8) + 'px';
+                    }
+                  }, 100); // Delay to let scroll complete
+                }
+              }
+            });
+          }
         }
       }
 
@@ -1095,9 +1763,25 @@ var trace = traceObj.trace;
               ('Year: ' + years[idx] + '<br>Value: ' + values[idx]);
           }
 
+          // Helper to get clean text for aria-label (without HTML)
+          function getCleanLabel(idx) {
+            var label = getLabel(idx);
+            // Replace the linebreaks with . so that the screenreader sees it as a new sentence
+            // Remove all HTML tags to prevent screen readers from reading them literally
+            var cleanLabel = label.replace(/<br\\s*\\/?>/gi, '. ').replace(/<[^>]*>/g, '');
+            return cleanLabel;
+          }
+
+          // Helper to update aria-label with current data point
+          function updateAriaLabel(idx) {
+            line.setAttribute('aria-label', getCleanLabel(idx));
+          }
+
           // Keyboard focus handlers
           line.addEventListener('focus', function(e) {
+            isKeyboardNavigating = true;
             currentYearIndex = 0;
+            updateAriaLabel(currentYearIndex);
             addOrMoveHighlight('keyboard-highlight-circle-' + i, trace, currentYearIndex, color);
             showTooltipAt(trace, currentYearIndex, getLabel(currentYearIndex));
           });
@@ -1105,19 +1789,25 @@ var trace = traceObj.trace;
           line.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowRight') {
               if (currentYearIndex < years.length - 1) {
+                isKeyboardNavigating = true;
                 currentYearIndex++;
+                updateAriaLabel(currentYearIndex);
                 addOrMoveHighlight('keyboard-highlight-circle-' + i, trace, currentYearIndex, color);
                 showTooltipAt(trace, currentYearIndex, getLabel(currentYearIndex));
               }
               e.preventDefault();
             } else if (e.key === 'ArrowLeft') {
               if (currentYearIndex > 0) {
+                isKeyboardNavigating = true;
                 currentYearIndex--;
+                updateAriaLabel(currentYearIndex);
                 addOrMoveHighlight('keyboard-highlight-circle-' + i, trace, currentYearIndex, color);
                 showTooltipAt(trace, currentYearIndex, getLabel(currentYearIndex));
               }
               e.preventDefault();
             } else if (e.key === 'Enter' || e.key === ' ') {
+              isKeyboardNavigating = true;
+              updateAriaLabel(currentYearIndex);
               addOrMoveHighlight('keyboard-highlight-circle-' + i, trace, currentYearIndex, color);
               showTooltipAt(trace, currentYearIndex, getLabel(currentYearIndex));
               e.preventDefault();
@@ -1129,6 +1819,18 @@ var trace = traceObj.trace;
           });
 
           line.addEventListener('blur', function(e) {
+            // Reset aria-label to generic label when losing focus
+            line.setAttribute('aria-label', trace.name ? 'Line for ' + trace.name : 'Line ' + (i+1));
+
+            // Delay setting flag to false - if another line gets focus immediately,
+            // the flag will stay true. Only set to false if we actually leave the chart.
+            setTimeout(function() {
+              var anyLineFocused = el.querySelector('.scatterlayer .lines:focus');
+              if (!anyLineFocused) {
+                isKeyboardNavigating = false;
+                hideTooltip();
+              }
+            }, 10);
             hideTooltip();
             removeHighlight('keyboard-highlight-circle-' + i);
           });
@@ -1142,9 +1844,64 @@ var trace = traceObj.trace;
       el.on('plotly_restyle', setupKeyboardLines);
       el.on('plotly_relayout', setupKeyboardLines);
       el.on('plotly_redraw', setupKeyboardLines);
+
+      // If the mouse is used, and a line is focused, blur the line so mouse tooltip works again
+      el.addEventListener('mousemove', function(e) {
+        // Check if mouse actually moved (to distinguish from spurious events during scroll)
+        if (lastMouseX !== null && lastMouseY !== null) {
+          var deltaX = Math.abs(e.clientX - lastMouseX);
+          var deltaY = Math.abs(e.clientY - lastMouseY);
+
+          // If mouse moved more than 5px, it's real movement
+          if (deltaX > 5 || deltaY > 5) {
+            isKeyboardNavigating = false;
+            hideTooltip();
+
+            var focused = el.querySelector('.scatterlayer .lines:focus');
+            if (focused) {
+              focused.blur();
+            }
+          }
+        }
+
+        // Update last mouse position
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+      });
+
+      // Handle scrolling: reposition tooltip during keyboard nav, hide during manual scroll
+      var handleScroll = function() {
+        if (isKeyboardNavigating) {
+          // During keyboard navigation, reposition tooltip to stay with the point
+          var focused = el.querySelector('.scatterlayer .lines:focus');
+          if (focused && tooltip.style.display !== 'none') {
+            // Get the current trace and index to recalculate position
+            // Note: we'd need to store currentYearIndex in a wider scope to reposition accurately
+            // For now, just keep the tooltip visible but it may drift slightly
+          }
+        } else {
+          // Manual scrolling: hide tooltip and blur
+          hideTooltip();
+          var focused = el.querySelector('.scatterlayer .lines:focus');
+          if (focused) {
+            focused.blur();
+          }
+        }
+      };
+
+      // Listen for page scroll
+      window.addEventListener('scroll', handleScroll, true);
+
+      // Listen for scroll on the plot container and its ancestors
+      var scrollParent = el;
+      while (scrollParent) {
+        scrollParent.addEventListener('scroll', handleScroll);
+        scrollParent = scrollParent.parentElement;
+      }
     }
     "
   )
+
   return(fig2)
 }
 
