@@ -56,3 +56,18 @@ test_that("ro_ply_title adds all three annotations", {
     expect_identical(a$font$color, "#112233")
   }
 })
+
+test_that("ro_ply_title applies the font resolved by ro_check_if_font_available, not the requested one", {
+  local_mocked_bindings(
+    ro_check_if_font_available = function(base_family) "Verdana"
+  )
+  library(plotly)
+  fig <- plot_ly(x = 1:3, y = 1:3)
+  fig_titled <- ro_ply_title(fig, title = "My Title", base_family = "RijksoverheidSansWebText")
+
+  layout_annots <- lapply(fig_titled$x$layoutAttrs, function(x) x$annotations)
+  layout_annots <- Filter(Negate(is.null), layout_annots)
+  annots <- unlist(layout_annots, recursive = FALSE)
+
+  expect_identical(annots[[1]]$font$family, "Verdana")
+})
