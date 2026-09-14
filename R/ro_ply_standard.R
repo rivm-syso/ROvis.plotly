@@ -97,7 +97,7 @@
 #'   )
 #'
 #'   # Apply Rijksoverheid / RIVM styling with accessibility features for a bar graph
-#'   fig <- ro_ply_wrapper(
+#'   fig <- ro_ply_standard(
 #'     fig,
 #'     type = "bargraph",           # Adds keyboard navigation
 #'     barmode = "group",           # Group bars by age group
@@ -108,7 +108,7 @@
 #'
 #'   fig
 #' }
-ro_ply_wrapper <- function(fig, type = c("none", "barchart", "bargraph", "linechart", "trendline"),
+ro_ply_standard <- function(fig, type = c("none", "barchart", "bargraph", "linechart", "trendline"),
 
                            # parameters for ro_ply_theme
                            barmode = "vgroup",

@@ -23,7 +23,7 @@ This vignette demonstrates how to create clear, publication-ready visualizations
 
 # Key Function
 
-- **`ro_ply_wrapper()`**  
+- **`ro_ply_standard()`**  
 
 
 # Code Examples
@@ -85,7 +85,7 @@ fig <- plot_ly(
 )
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_wrapper(fig,
+fig <- ro_ply_standard(fig,
                       type = "bargraph", 
                       barmode = "group",
                       y_data = data$"Age group", 
@@ -129,7 +129,7 @@ fig <- plot_ly(
 )
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_wrapper(fig,
+fig <- ro_ply_standard(fig,
                       type = "bargraph",
                       y_data = bar_data$n, 
                       y_label = "Aantal cases", 
@@ -178,7 +178,7 @@ fig <- plot_ly() |>
   )
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_wrapper(fig,
+fig <- ro_ply_standard(fig,
                       type = "barchart",
                       y_data = data$"Age group", 
                       y_label = "Groep", 
@@ -244,7 +244,7 @@ fig <- plot_ly(
 )
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_wrapper(fig,
+fig <- ro_ply_standard(fig,
                       type = "bargraph", 
                       barmode = "stack",
                       y_data = stacked_data |>  group_by(Agegroup) |>  summarise(n_total = sum(n)) |>  pull(n_total),
@@ -310,7 +310,7 @@ fig <- plot_ly(
   )
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_wrapper(fig,
+fig <- ro_ply_standard(fig,
                       type = "bargraph", 
                       barmode = "stack",
                       y_data = prop_data$bar_label,
@@ -368,7 +368,7 @@ fig <- plot_ly(
   )
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_wrapper(fig,
+fig <- ro_ply_standard(fig,
                       type = "trendline", 
                       y_data = tab_cases_rolling_average$n,
                       y_label = "Aantal gevallen",
@@ -424,7 +424,7 @@ for (prov in prov_names) {
 
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_wrapper(fig,
+fig <- ro_ply_standard(fig,
                       type = "trendline", 
                       y_data = tab_cases_week_by_prov$n,
                       y_label = "Aantal gevallen",
@@ -484,7 +484,7 @@ for (geslacht in levels(data_all$Geslacht)) {
 }
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_wrapper(fig,
+fig <- ro_ply_standard(fig,
                       type = "linechart", 
                       y_data = data_all$value,
                       y_label = "Aantal cases",
