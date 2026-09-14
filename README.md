@@ -10,7 +10,7 @@
 ## Rijksoverheid Visualisatie - plotly
 
 ## Description
-ROvis.plotly is an R package that provides plotly visualisations in Rijksoverheid style.
+A tool to uniformly visualise interactive graphs in 'plotly' using standardized Rijksoverheid (Dutch National Government) styling. This package is part of the [ROvis umbrella package] (https://github.com/rivm-syso/ROvis).
 
 ## Installation
 
@@ -23,21 +23,55 @@ remotes::install_github("rivm-syso/ROvis.plotly")
 
 
 ## Usage
-*Use examples liberally, and show the expected output if you can. It's helpful to have the smallest example of usage that you can demonstrate inline, while providing links to more sophisticated examples if they are too long to reasonably include in the README.*
+
+A short example of on how to use the ro_ply_add_theme() function in combination with your plotly-object.
+For the full functionality, please see the vignettes.
+
+```r
+bar_data <- tibble::tibble(
+  Sex = c("Man", "Vrouw"),
+  n = c(1234, 1675)
+)
+
+# Use the  color function for Rijksoverheid / RIVM colors
+sex_colors <- c(
+  "Man" = ro_color("hemelblauw"),
+  "Vrouw" = ro_color("robijnrood")
+)
+
+# Create plotly bar chart
+fig <- plot_ly(
+  data = bar_data,
+  x = ~Sex,
+  y = ~n,
+  type = "bar",
+  color = ~Sex,
+  colors = sex_colors,
+  text = ~paste0(
+    "Geslacht: <b>", Sex, "</b>",
+    "<br>Aantal cases: <b>", 
+    format(round(n, 0), big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+  ),
+  hoverinfo = "text"
+)
+
+# Apply Rijksoverheid / RIVM theme
+fig <- ro_ply_add_theme(fig, ro_ply_theme())
+```
 
 ## Support
 First point of contact for questions: spin@rivm.nl (spin@rivm.nl)
 
-## Roadmap
-*If you have ideas for releases in the future, it is a good idea to list them in the README.*
 
 ## Contributing
-*State if you are open to contributions and what your requirements are for accepting them.*
+We welcome contributions and are always happy to see people help improve this package.
+If you would like to contribute, please first open an issue to describe the bug, feature, or proposed change. Once you are ready, submit a pull request linked to that issue.
+All contributions will be reviewed by the SPIN team before they are merged.
 
 ## Instructions for developers 
 
-Below we describe the most important guidelines and practicalities for R package
-development on this project.
+For information about R package development, check the [R Packages book](https://r-pkgs.org/). 
+Below we describe the most important guidelines and practicalities.
 
 
 ### Requirements
@@ -69,7 +103,7 @@ the `min_version` argument to specify a minimum version.
 create automatic documentation in the `man` folder
 
 ## Authors and acknowledgment
-This R packages was created by spin@rivm.nl (spin@rivm.nl).
+This R packages was created by ROvis team (spin@rivm.nl).
 
 ## License
-*For open source projects, indicate how it is licensed.*
+This package uses an Apache license.
