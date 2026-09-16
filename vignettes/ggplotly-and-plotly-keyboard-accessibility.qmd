@@ -1,9 +1,9 @@
 ---
 title: "ggplotly and plotly keyboard accessibility"
-output: rmarkdown::html_vignette
+format: html
 vignette: >
   %\VignetteIndexEntry{ggplotly-and-plotly-keyboard-accessibility}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
 

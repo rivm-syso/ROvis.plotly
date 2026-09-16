@@ -20,6 +20,10 @@ importFrom(ROvis.utils,
 )
 importFrom(cli,cli_abort)
 importFrom(dplyr,filter)
+importFrom(htmltools,
+  HTML,
+  tags
+)
 importFrom(htmlwidgets,onRender)
 importFrom(magrittr,"%>%")
 importFrom(plotly,

@@ -4,11 +4,11 @@
 \name{ROvis.plotly-package}
 \alias{ROvis.plotly}
 \alias{ROvis.plotly-package}
-\title{ROvis.plotly: Create interactive data visualisations in Rijksoverheid style using plotly}
+\title{ROvis.plotly: Create interactive data visualisations in Rijksoverheid style using 'plotly'}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-ROvis.plotly is an R package that provides plotly visualisations in Rijksoverheid style.
+Provides accessible, keyboard-navigable 'plotly' visualisations in Rijksoverheid style.
 }
 \author{
 \strong{Maintainer}: ROvis team \email{spin@rivm.nl}

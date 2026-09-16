@@ -157,7 +157,7 @@ ro_ply_theme <- function(
   tooltip_font_size = 13
 ) {
   check_string(base_family)
-  ro_check_if_font_available(base_family = base_family)
+  base_family <- ro_check_if_font_available(target_font_family = base_family)
 
   rivm_theme <- list(
     # Title
