@@ -52,7 +52,7 @@ ro_ply_title <- function(
   decimal_seperator = "," # Dutch way of seperators
 ) {
   check_string(base_family)
-  base_family <- ro_check_if_font_available(base_family = base_family)
+  base_family <- ro_check_if_font_available(target_font_family = base_family)
 
   # First, determine the size of the longest y-axis label
   if (!is.null(y_label)) {

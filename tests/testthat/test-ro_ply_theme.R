@@ -39,7 +39,7 @@ test_that("ro_ply_theme returns a correct theme list", {
 
 test_that("ro_ply_theme applies the font resolved by ro_check_if_font_available, not the requested one", {
   local_mocked_bindings(
-    ro_check_if_font_available = function(base_family) "Verdana"
+    ro_check_if_font_available = function(target_font_family) "Verdana"
   )
   theme <- ro_ply_theme(base_family = "RijksoverheidSansWebText")
   expect_identical(theme$title$font$family, "Verdana")
