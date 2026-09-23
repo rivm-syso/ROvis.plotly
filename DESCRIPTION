@@ -3,7 +3,7 @@ Title: Create interactive data visualisations in Rijksoverheid style using 'plot
 Version: 0.1.0
 Authors@R: person("ROvis team", email = "spin@rivm.nl", role = c("cre", "aut"))
 Description: Provides accessible, keyboard-navigable 'plotly' visualisations in Rijksoverheid style.
-License: Apache License (>= 2)
+License: EUPL (>= 1.2)
 Depends:
     R (>= 4.5.0)
 Imports: 
