@@ -1,0 +1,498 @@
+---
+title: "plotly figures in Rijksoverheid style"
+format:
+  html:
+    tabset: TRUE
+vignette: >
+  %\VignetteIndexEntry{plotly figures in Rijksoverheid style}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r eval, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, echo = TRUE)
+```
+
+```{r setup}
+library(plotly)
+library(ROvis.plotly) # nolint: missing_package_linter.
+library(ROvis.utils)
+```
+
+# Introduction
+
+This vignette demonstrates how to create clear, publication-ready visualizations in R using the [plotly](https://plotly.com/r/) package, styled according to the Rijksoverheids style The provided functions allow you to quickly apply consistent fonts, colors, grid lines, axes, legends, tooltips, and annotation styling across all your Plotly charts.
+
+# Key Function
+
+- **`ro_ply_standard()`**  
+
+
+# Code Examples
+
+## Column Chart / Grouped Vertical Bar Chart
+
+This example shows how to create a grouped vertical bar chart (column chart) displaying the number of cases by age group and sex.
+
+```{r example column chart}
+
+# We first make some random data
+age_levels <- c(
+  "0", "1-9", "10-19", "20-29",
+  "30-39", "40-49", "50-59",
+  "60-69", "70-79", "80-89", "90+"
+)
+
+base_data <- tidyr::expand_grid(
+  `Age group` = age_levels,
+  Sex = c("Men", "Women")
+) |>
+  dplyr::mutate(
+    `Number of Cases` = sample(1:50, length(age_levels) * 2, TRUE)
+  )
+
+summary_data <- base_data |>
+  dplyr::summarize(
+    `Number of Cases` = sum(`Number of Cases`),
+    .by = `Age group`
+  ) |>
+  dplyr::mutate(Sex = "Total")
+
+data <- dplyr::bind_rows(base_data, summary_data) |>
+  dplyr::mutate(
+    `Age group` = factor(`Age group`, levels = age_levels),
+    Sex = factor(Sex, levels = c("Men", "Women", "Total"))
+  )
+
+
+# Then we make the basic plotly plot
+theme_rivm <- ro_ply_theme(barmode = "group")
+kleuren <- c(ro_color("hemelblauw"), ro_color("robijnrood"),  ro_color("paars"))
+
+fig <- plot_ly(
+  data = data,
+  x = ~`Age group`,
+  y = ~`Number of Cases`,
+  type = "bar",
+  color = ~Sex,
+  colors = kleuren,
+  text = ~paste0(
+    "Geslacht: <b>", Sex, "</b>",
+    "<br>Leeftijdsgroep: <b>", `Age group`,
+    "</b><br>Aantal cases: <b>",
+    format(round(`Number of Cases`, 0), big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+  ),
+  textposition = "none",
+  hoverinfo = "text"
+)
+
+# And apply the Rijksoverheid / RIVM theme, and accesibility features
+fig <- ro_ply_standard(fig,
+                      type = "bargraph", 
+                      barmode = "group",
+                      y_data = data$"Age group", 
+                      y_label = "Aantal cases", 
+                      title = "COVID-19 cases per leeftijdsgroep en geslacht", 
+                      x_label = "Leeftijdsgroepen")
+fig
+```
+
+
+## Bar Graph
+
+This example demonstrates a simple vertical bar chart / bar graph, showing the number of cases per sex, with the default Rijksoverheid / RIVM theme.
+
+```{r example bar graph}
+# We first make some random data
+bar_data <- tibble::tibble(
+  Sex = c("Man", "Vrouw"),
+  n = c(1234, 1675)
+)
+
+# Then we make the basic plotly plot
+sex_colors <- c(
+  "Man" = ro_color("hemelblauw"),
+  "Vrouw" = ro_color("robijnrood")
+)
+
+fig <- plot_ly(
+  data = bar_data,
+  x = ~Sex,
+  y = ~n,
+  type = "bar",
+  color = ~Sex,
+  colors = sex_colors,
+  text = ~paste0(
+    "Geslacht: <b>", Sex, "</b>",
+    "<br>Aantal cases: <b>", 
+    format(round(n, 0), big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+  ),
+  hoverinfo = "text"
+)
+
+# And apply the Rijksoverheid / RIVM theme, and accesibility features
+fig <- ro_ply_standard(fig,
+                      type = "bargraph",
+                      y_data = bar_data$n, 
+                      y_label = "Aantal cases", 
+                      title = "COVID-19 cases per geslacht",  
+                      x_label = "Geslacht")
+fig
+```
+
+## Horizontal Bar Chart
+
+This example demonstrates how to create a horizontal bar chart grouped by age group and sex.  
+
+```{r example horizontal barchart}
+# We first make some random data
+data <- tibble::tibble(expand.grid(`Age group` = c("A", "B", "C", "D", "E"),
+                                   `Sex` = c("Man", "Vrouw")),
+                       `Number of Cases` = sample(1:50, 10, TRUE))
+
+
+# Then we make the basic plotly plot
+kleuren <- c(
+  "Man" = ro_color("hemelblauw"),
+  "Vrouw" = ro_color("robijnrood")
+)
+
+fig <- plot_ly() |>
+  plotly::add_trace(data = data,
+    x = ~`Number of Cases`,
+    y = ~`Age group`,
+    color = ~`Sex`,
+    colors = kleuren,
+    type = "bar",
+    orientation = "h", # horizontal bars
+    hovertext  = ~paste0(
+      "Leeftijdsgroep: <b>", `Age group`, "</b><br>",
+      "Geslacht: <b>", `Sex`, "</b><br>",
+      "Aantal cases: <b>", `Number of Cases`, "</b>"
+    ),
+    text  = ~paste0(
+      "Leeftijdsgroep: <b>", `Age group`, "</b><br>",
+      "Geslacht: <b>", `Sex`, "</b><br>",
+      "Aantal cases: <b>", `Number of Cases`, "</b>"
+    ),
+    textposition = "none",
+    hoverinfo = "text"
+  )
+
+# And apply the Rijksoverheid / RIVM theme, and accesibility features
+fig <- ro_ply_standard(fig,
+                      type = "barchart",
+                      y_data = data$"Age group", 
+                      y_label = "Groep", 
+                      title = "COVID-19 cases per geslacht en groep", 
+                      x_label = "Aantal cases",
+                      y_axis_spike = TRUE,
+                      x_axis_spike = FALSE,
+                      y_axis_showline = TRUE,
+                      x_axis_showline = FALSE,
+                      y_axis_showgrid = FALSE,
+                      x_axis_showgrid = TRUE
+                      )
+fig
+```
+
+## Stacked Bar Graph
+
+This example demonstrates how to create a stacked bar chart displays the number of cases per age group and sex.
+
+The theme uses:
+`theme_rivm <- ro_ply_theme(barmode = "stack")`
+where `barmode = "stack"` stacks the bars by sex within each age group.
+
+```{r example stacked bar graph}
+library(dplyr)
+
+# We first make some random data
+stacked_data <- tibble::tibble(
+  Agegroup = rep(c("0-9", "10-19", "20-29", "30-39"), each = 3),
+    Sex = factor(rep(c("Man", "Vrouw", "Onbekend"), times = 4), 
+               levels = c("Man", "Vrouw", "Onbekend")),
+  n = c(10, 14, 2, 15, 17, 1, 23, 18, 0, 9, 11, 3)
+)
+
+# Then we make the basic plotly plot
+sex_colors <- c(
+  "Man" = ro_color("hemelblauw"),
+  "Vrouw" = ro_color("robijnrood"),
+  "Onbekend" = ro_color("donkergeel")
+)
+
+fig <- plot_ly(
+  data = stacked_data,
+  x = ~Agegroup,
+  y = ~n,
+  type = "bar",
+  color = ~Sex,
+  colors = sex_colors,
+  text = ~paste0(
+    "Leeftijdsgroep: <b>", Agegroup, "</b>",
+    "<br>Geslacht: <b>", Sex, "</b>",
+    "<br>Aantal cases: <b>", 
+    format(round(n, 0), big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+  ),
+  hovertext = ~paste0(
+    "Leeftijdsgroep: <b>", Agegroup, "</b>",
+    "<br>Geslacht: <b>", Sex, "</b>",
+    "<br>Aantal cases: <b>", 
+    format(round(n, 0), big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+  ),
+  textposition = "none",
+  hoverinfo = "text"
+)
+
+# And apply the Rijksoverheid / RIVM theme, and accesibility features
+fig <- ro_ply_standard(fig,
+                      type = "bargraph", 
+                      barmode = "stack",
+                      y_data = stacked_data |>  group_by(Agegroup) |>  summarise(n_total = sum(n)) |>  pull(n_total),
+                      title = "COVID-19 cases per leeftijdsgroep en geslacht",
+                      x_label = "Leeftijdsgroep",
+                      y_label = "Aantal cases"
+                      )
+fig
+```
+## Proportional Stacked Bar Graph
+
+This example demonstrates how to create aroportional stacked bar chart, displaying  the proportion of cases per age group and sex as a horizontal.
+
+```{r example proportional stacked bar graph}
+library(dplyr)
+
+# We first make some random data
+prop_data <- tibble::tibble(
+  age_cat = rep(c("0-9", "10-19", "20-29", "30-39"), each = 2),
+  Sex = rep(c("Man", "Vrouw"), times = 4),
+  n = c(12, 8, 15, 12, 20, 18, 10, 7)
+) |> 
+  group_by(age_cat) |> 
+  mutate(
+    total = sum(n),
+    prop = n / total,
+    prop_label = paste0(round(prop * 100, 1), "%"),
+    bar_label = age_cat
+  ) |> 
+  ungroup()
+
+# Then we make the basic plotly plot
+sex_colors <- c(
+  "Man" = ro_color("hemelblauw"),
+  "Vrouw" = ro_color("robijnrood")
+)
+
+fig <- plot_ly(
+  data = prop_data,
+  y = ~bar_label,
+  x = ~prop,
+  color = ~Sex,
+  colors = sex_colors,
+  type = "bar",
+  orientation = "h",
+  text = ~paste0(
+    "Leeftijdsgroep: <b>", age_cat, "</b><br>",
+    "Geslacht: <b>", Sex, "</b><br>",
+    "Percentage: <b>", prop_label, "</b>"
+  ),
+  textposition = "auto",
+  hovertemplate = ~paste0(
+    "Leeftijdsgroep: <b>", age_cat, "</b><br>",
+    "Geslacht: <b>", Sex, "</b><br>",
+    "Percentage: <b>", prop_label, "</b>"
+  ),
+  hoverinfo = "text"
+) |> 
+  layout(
+    xaxis = list(
+      range = c(0, 1)
+    )
+  )
+
+# And apply the Rijksoverheid / RIVM theme, and accesibility features
+fig <- ro_ply_standard(fig,
+                      type = "bargraph", 
+                      barmode = "stack",
+                      y_data = prop_data$bar_label,
+                      y_label = "Leeftijdsgroep",
+                      title = "Percentage COVID-19 cases per leeftijdsgroep en geslacht",
+                      x_label = "Percentage",
+                      x_axis_tick_format = ".0%",
+                      )
+fig
+
+```
+
+## Trendline
+
+This example shows a trendline (with points and a moving average) for daily case counts.
+
+```{r example trendline}
+library(dplyr)
+library(zoo)
+library(stringr)
+
+# We first make some random data
+tab_cases_rolling_average <- tibble::tibble(
+  Date_statistics = seq(as.Date("2022-11-01"), as.Date("2022-12-31"), by = "day"),
+  n = round(seq(100, 400, length.out = 61) + rnorm(61, 0, 20)) # trend + noise
+) |> 
+  mutate(
+    moving_average = zoo::rollmean(n, k = 7, fill = NA, align = "right"),
+    text = str_c(
+      "Dag: <b>", format(Date_statistics, "%d-%m-%Y"), "</b><br>",
+      "Aantal cases: <b>", format(n, big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b><br>",
+      "7-daags gemiddelde: <b>", format(round(moving_average, 0), 
+                                        big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+    )
+  )
+
+# Then we make the basic plotly plot
+fig <- plot_ly(
+  data = tab_cases_rolling_average,
+  x = ~Date_statistics
+) |> 
+  plotly::add_markers(
+    y = ~n,
+    name = "Aantal cases",
+    marker = list(color = ro_color("robijnrood_tint60"), size = 5),
+    text = ~text,
+    hoverinfo = "text"
+  ) |> 
+  plotly::add_lines(
+    y = ~moving_average,
+    name = "7-daags gemiddelde",
+    line = list(color = ro_color("robijnrood"), width = 2),
+    text = ~text,
+    hoverinfo = "text"
+  )
+
+# And apply the Rijksoverheid / RIVM theme, and accesibility features
+fig <- ro_ply_standard(fig,
+                      type = "trendline", 
+                      y_data = tab_cases_rolling_average$n,
+                      y_label = "Aantal gevallen",
+                      title = "COVID-19 gevallen per dag en 7-daags gemiddelde",
+                      x_label = "Datum",
+                      x_axis_tick_format = "%d %b"
+                      )
+fig
+
+```
+
+## Grouped Trendline
+This example shows a grouped trendline for multiple provinces.
+
+```{r example grouped trendline}
+library(dplyr)
+
+# We first make some random data
+weeks <- seq(as.Date("2022-11-01"), as.Date("2022-12-31"), by = "week")
+tab_cases_week_by_prov <- tibble::tibble(
+  week = rep(weeks, 2),
+  Province = rep(c("Groningen", "Zeeland"), each = length(weeks)),
+  n = c(
+    seq(100, 200, length.out = length(weeks)) + rnorm(length(weeks), 0, 10), # Slightly increasing with noise
+    seq(100, 200, length.out = length(weeks)) + rnorm(length(weeks), 0, 10) 
+  )
+)
+
+# Then we make the basic plotly plot
+prov_names <- unique(tab_cases_week_by_prov$Province)
+prov_colors <- setNames(theme_rivm$colorway[seq_along(prov_names)], prov_names)
+
+fig <- plot_ly()
+for (prov in prov_names) {
+  prov_data <- filter(tab_cases_week_by_prov, Province == prov)
+  fig <- fig |> 
+    plotly::add_trace(
+      data = prov_data,
+      x = ~week,
+      y = ~n,
+      type = "scatter",
+      mode = "lines+markers", 
+      name = prov,
+      line = list(color = prov_colors[prov], width = 2),
+      text = ~paste0(
+        "Provincie: <b>", Province, "</b>",
+        "<br>Week: <b>", format(week, "%e %b %Y"), "</b>",
+        "<br>Aantal cases: <b>", format(round(n, 0), big.mark = ".", decimal.mark = ",", scientific = FALSE), "</b>"
+      ),
+      hoverinfo = "text"
+    )
+}
+
+
+# And apply the Rijksoverheid / RIVM theme, and accesibility features
+fig <- ro_ply_standard(fig,
+                      type = "trendline", 
+                      y_data = tab_cases_week_by_prov$n,
+                      y_label = "Aantal gevallen",
+                      title = "COVID-19 gevallen per week voor twee provincies",
+                      x_label = "Week",
+                      x_axis_tick_format = "%d %b"
+                      )
+fig
+```
+
+## Line chart
+
+This example creates a grouped line chart showing cases by year and sex.
+
+```{r example line chart}
+library(dplyr)
+library(stringr)
+
+# We first make some random data
+data <- tibble::tibble(
+  expand.grid(Jaar = 2001:2020, Geslacht = c("Man", "Vrouw")),
+  value = sample(1:50, 40, TRUE)
+)
+data_sum <- data |>
+  group_by(Jaar) |>
+  summarize(value = sum(value), .groups = "drop") |>
+  mutate(Geslacht = "Totaal")
+data_all <- bind_rows(data, data_sum) |>
+  mutate(Geslacht = factor(Geslacht, levels = c("Man", "Vrouw", "Totaal")))
+
+# Then we make the basic plotly plot
+kleuren <- c(
+  "Man" = ro_color("hemelblauw"),
+  "Vrouw" = ro_color("robijnrood"),
+  "Totaal" = ro_color("paars")
+)
+
+fig <- plot_ly()
+for (geslacht in levels(data_all$Geslacht)) {
+  subset <- filter(data_all, Geslacht == geslacht)
+  fig <- fig |> 
+    plotly::add_trace(
+      data = subset,
+      x = ~Jaar,
+      y = ~value,
+      type = "scatter",
+      mode = "lines",
+      name = geslacht,
+      line = list(color = kleuren[geslacht], width = 2),
+      text = ~str_c(
+        "Geslacht: <b>", Geslacht,
+        "</b><br>Jaar: <b>", Jaar,
+        "</b><br>Aantal cases: <b>", value
+      ),
+      hoverinfo = "text"
+    )
+}
+
+# And apply the Rijksoverheid / RIVM theme, and accesibility features
+fig <- ro_ply_standard(fig,
+                      type = "linechart", 
+                      y_data = data_all$value,
+                      y_label = "Aantal cases",
+                      title = "COVID-19 cases per geslacht",
+                      x_label = "" #For the year, no x-axis title is needed
+                      )
+fig
+```
+
