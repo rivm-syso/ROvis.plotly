@@ -1,9 +1,11 @@
 ---
 title: "plotly figures in Rijksoverheid style"
-output: rmarkdown::html_vignette
+format:
+  html:
+    tabset: TRUE
 vignette: >
   %\VignetteIndexEntry{plotly figures in Rijksoverheid style}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
 
