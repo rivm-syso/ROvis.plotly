@@ -15,10 +15,9 @@ A tool to uniformly visualise interactive graphs in 'plotly' using standardized 
 ## Installation
 
 ```r
-# Install from GitHub (private repo - requires GitHub auth, e.g. a PAT
-# via usethis::create_github_token() / gitcreds, since this repo is private)
-# install.packages("remotes")
-remotes::install_github("rivm-syso/ROvis.plotly")
+# Install from GitHub
+# install.packages("pak")
+pak::pak("rivm-syso/ROvis.plotly")
 ```
 
 
