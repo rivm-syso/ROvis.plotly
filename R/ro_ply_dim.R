@@ -8,7 +8,6 @@
 #' @param height Desired plot height in pixels. Default is 400.
 #'
 #' @return A Plotly figure object with updated sizing policy and layout.
-#' @export
 #' @family plotly
 #' @examples
 #' \dontrun{

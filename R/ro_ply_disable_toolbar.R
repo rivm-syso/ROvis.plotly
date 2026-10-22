@@ -10,7 +10,6 @@
 #'
 #' @return A \code{plotly} object without the modebar and with improved legend accessibility.
 #'
-#' @export
 #' @family ggplotly
 #' @family plotly
 #' @examples

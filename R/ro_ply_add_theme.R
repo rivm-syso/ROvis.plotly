@@ -4,7 +4,6 @@
 #'
 #' @param fig A Plotly figure object created by \code{plotly::plot_ly()} or similar.
 #' @param theme A named list of layout parameters to apply as a theme (e.g., font, colors, margins).
-#' @export
 #' @family plotly
 #' @return A Plotly figure object with the specified theme applied.
 #'
