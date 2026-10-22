@@ -17,7 +17,6 @@
 #' @family ggplotly
 #' @return A \code{plotly} object with improved accessibility features for keyboard and screen reader users.
 #' @seealso \code{\link{ro_ply_keyboard_nav_bargraph}}
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -596,7 +595,6 @@ ro_ply_keyboard_nav_barchart <- function(fig) {
 #' @return A \code{plotly} object with improved keyboard accessibility.
 #' @family ggplotly
 #' @family plotly
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -1098,7 +1096,6 @@ ro_ply_keyboard_nav_bargraph <- function(fig) {
 #'
 #' @return A \code{plotly} object with improved keyboard accessibility.
 #'
-#' @export
 #' @family ggplotly
 #' @family plotly
 #' @examples
@@ -1511,7 +1508,6 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
 #' @return A \code{plotly} object with improved keyboard accessibility for line charts.
 #' @family ggplotly
 #' @family plotly
-#' @export
 #'
 #' @examples
 #' \dontrun{

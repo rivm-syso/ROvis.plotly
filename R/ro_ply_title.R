@@ -21,7 +21,6 @@
 #' @family plotly
 #' @return The plotly figure object with added (and styled) title and/or axis labels as annotations.
 #'
-#' @export
 #'
 #' @examples
 #' \dontrun{

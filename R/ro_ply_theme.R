@@ -51,7 +51,6 @@
 #' @return A named list with plotly theming options, suitable for passing
 #' to \code{plotly::layout()} or as a theme in a plotly chart.
 #'
-#' @export
 #'
 #' @examples
 #' \dontrun{

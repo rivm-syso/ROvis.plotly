@@ -11,7 +11,6 @@
 #'
 #' @return A \code{plotly} object with improved legend accessibility.
 #'
-#' @export
 #' @family ggplotly
 #' @family plotly
 #' @examples

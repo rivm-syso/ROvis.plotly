@@ -7,7 +7,6 @@
 #' @param fig A Plotly figure object created by \code{plotly::plot_ly()} or similar.
 #'
 #' @return The Plotly figure object with the custom legend styling applied.
-#' @export
 #' @family plotly
 #' @examples
 #' \dontrun{
