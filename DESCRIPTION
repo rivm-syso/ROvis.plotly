@@ -4,6 +4,8 @@ Version: 0.1.0
 Authors@R: person("ROvis team", email = "spin@rivm.nl", role = c("cre", "aut"))
 Description: Provides accessible, keyboard-navigable 'plotly' visualisations in Rijksoverheid style.
 License: EUPL (>= 1.2)
+URL: https://rivm-syso.github.io/ROvis.plotly/, https://github.com/rivm-syso/ROvis.plotly
+BugReports: https://github.com/rivm-syso/ROvis.plotly/issues
 Depends:
     R (>= 4.5.0)
 Imports: 
@@ -27,8 +29,8 @@ Suggests:
     tibble (>= 3.3.0),
     tidyr (>= 1.3.1),
     zoo (>= 1.8-14)
-Remotes:     
-  rivm-syso/ROvis.utils
+Remotes:
+    rivm-syso/ROvis.utils@*release
 VignetteBuilder: quarto
 Config/roxygen2/version: 8.1.0
 Config/testthat/edition: 3

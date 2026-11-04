@@ -14,12 +14,23 @@ A tool to uniformly visualise interactive graphs in 'plotly' using standardized 
 
 ## Installation
 
+Install the latest release from [R-universe](https://rivm-syso.r-universe.dev):
+
 ```r
-# Install from GitHub
+install.packages(
+  "ROvis.plotly",
+  repos = c("https://rivm-syso.r-universe.dev", "https://cloud.r-project.org")
+)
+```
+
+Install the development version from GitHub:
+
+```r
 # install.packages("pak")
 pak::pak("rivm-syso/ROvis.plotly")
 ```
 
+A version number ending in `.9000` is a development version.
 
 ## Usage
 
