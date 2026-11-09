@@ -1,4 +1,3 @@
-
 #' Improve keyboard accessibility for plotly legends
 #'
 #' `r ROvis.utils::ro_group_badge('toegankelijkheid')`

@@ -60,9 +60,11 @@ ro_ply_standard(
 )
 }
 \arguments{
-\item{fig}{A plotly figure object created by \code{plotly::plot_ly()} to which the styling and accesibility features will be added.}
+\item{fig}{A plotly figure object created by \code{plotly::plot_ly()} to which the styling and
+accesibility features will be added.}
 
-\item{type}{Type of chart for which to apply keyboard navigation. Options are "none", "barchart", "bargraph", "linechart", or "trendline". Default is "none".}
+\item{type}{Type of chart for which to apply keyboard navigation. Options are "none", "barchart",
+"bargraph", "linechart", or "trendline". Default is "none".}
 
 \item{barmode}{Bar mode for bar charts. "vgroup" by default.}
 
