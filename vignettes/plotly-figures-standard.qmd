@@ -87,13 +87,15 @@ fig <- plot_ly(
 )
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_standard(fig,
-                      type = "bargraph", 
-                      barmode = "group",
-                      y_data = data$"Age group", 
-                      y_label = "Aantal cases", 
-                      title = "COVID-19 cases per leeftijdsgroep en geslacht", 
-                      x_label = "Leeftijdsgroepen")
+fig <- ro_ply_standard(
+  fig,
+  type = "bargraph",
+  barmode = "group",
+  y_data = data$"Age group",
+  y_label = "Aantal cases",
+  title = "COVID-19 cases per leeftijdsgroep en geslacht",
+  x_label = "Leeftijdsgroepen"
+)
 fig
 ```
 
@@ -131,12 +133,14 @@ fig <- plot_ly(
 )
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_standard(fig,
-                      type = "bargraph",
-                      y_data = bar_data$n, 
-                      y_label = "Aantal cases", 
-                      title = "COVID-19 cases per geslacht",  
-                      x_label = "Geslacht")
+fig <- ro_ply_standard(
+  fig,
+  type = "bargraph",
+  y_data = bar_data$n,
+  y_label = "Aantal cases",
+  title = "COVID-19 cases per geslacht",
+  x_label = "Geslacht"
+)
 fig
 ```
 
@@ -180,19 +184,20 @@ fig <- plot_ly() |>
   )
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_standard(fig,
-                      type = "barchart",
-                      y_data = data$"Age group", 
-                      y_label = "Groep", 
-                      title = "COVID-19 cases per geslacht en groep", 
-                      x_label = "Aantal cases",
-                      y_axis_spike = TRUE,
-                      x_axis_spike = FALSE,
-                      y_axis_showline = TRUE,
-                      x_axis_showline = FALSE,
-                      y_axis_showgrid = FALSE,
-                      x_axis_showgrid = TRUE
-                      )
+fig <- ro_ply_standard(
+  fig,
+  type = "barchart",
+  y_data = data$"Age group",
+  y_label = "Groep",
+  title = "COVID-19 cases per geslacht en groep",
+  x_label = "Aantal cases",
+  y_axis_spike = TRUE,
+  x_axis_spike = FALSE,
+  y_axis_showline = TRUE,
+  x_axis_showline = FALSE,
+  y_axis_showgrid = FALSE,
+  x_axis_showgrid = TRUE
+)
 fig
 ```
 
@@ -210,7 +215,7 @@ library(dplyr)
 # We first make some random data
 stacked_data <- tibble::tibble(
   Agegroup = rep(c("0-9", "10-19", "20-29", "30-39"), each = 3),
-    Sex = factor(rep(c("Man", "Vrouw", "Onbekend"), times = 4), 
+  Sex = factor(rep(c("Man", "Vrouw", "Onbekend"), times = 4),
                levels = c("Man", "Vrouw", "Onbekend")),
   n = c(10, 14, 2, 15, 17, 1, 23, 18, 0, 9, 11, 3)
 )
@@ -246,14 +251,15 @@ fig <- plot_ly(
 )
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_standard(fig,
-                      type = "bargraph", 
-                      barmode = "stack",
-                      y_data = stacked_data |>  group_by(Agegroup) |>  summarise(n_total = sum(n)) |>  pull(n_total),
-                      title = "COVID-19 cases per leeftijdsgroep en geslacht",
-                      x_label = "Leeftijdsgroep",
-                      y_label = "Aantal cases"
-                      )
+fig <- ro_ply_standard(
+  fig,
+  type = "bargraph",
+  barmode = "stack",
+  y_data = stacked_data |>  group_by(Agegroup) |>  summarise(n_total = sum(n)) |>  pull(n_total),
+  title = "COVID-19 cases per leeftijdsgroep en geslacht",
+  x_label = "Leeftijdsgroep",
+  y_label = "Aantal cases"
+)
 fig
 ```
 ## Proportional Stacked Bar Graph
@@ -312,15 +318,16 @@ fig <- plot_ly(
   )
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_standard(fig,
-                      type = "bargraph", 
-                      barmode = "stack",
-                      y_data = prop_data$bar_label,
-                      y_label = "Leeftijdsgroep",
-                      title = "Percentage COVID-19 cases per leeftijdsgroep en geslacht",
-                      x_label = "Percentage",
-                      x_axis_tick_format = ".0%",
-                      )
+fig <- ro_ply_standard(
+  fig,
+  type = "bargraph",
+  barmode = "stack",
+  y_data = prop_data$bar_label,
+  y_label = "Leeftijdsgroep",
+  title = "Percentage COVID-19 cases per leeftijdsgroep en geslacht",
+  x_label = "Percentage",
+  x_axis_tick_format = ".0%"
+)
 fig
 
 ```
@@ -370,14 +377,15 @@ fig <- plot_ly(
   )
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_standard(fig,
-                      type = "trendline", 
-                      y_data = tab_cases_rolling_average$n,
-                      y_label = "Aantal gevallen",
-                      title = "COVID-19 gevallen per dag en 7-daags gemiddelde",
-                      x_label = "Datum",
-                      x_axis_tick_format = "%d %b"
-                      )
+fig <- ro_ply_standard(
+  fig,
+  type = "trendline",
+  y_data = tab_cases_rolling_average$n,
+  y_label = "Aantal gevallen",
+  title = "COVID-19 gevallen per dag en 7-daags gemiddelde",
+  x_label = "Datum",
+  x_axis_tick_format = "%d %b"
+)
 fig
 
 ```
@@ -426,14 +434,15 @@ for (prov in prov_names) {
 
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_standard(fig,
-                      type = "trendline", 
-                      y_data = tab_cases_week_by_prov$n,
-                      y_label = "Aantal gevallen",
-                      title = "COVID-19 gevallen per week voor twee provincies",
-                      x_label = "Week",
-                      x_axis_tick_format = "%d %b"
-                      )
+fig <- ro_ply_standard(
+  fig,
+  type = "trendline",
+  y_data = tab_cases_week_by_prov$n,
+  y_label = "Aantal gevallen",
+  title = "COVID-19 gevallen per week voor twee provincies",
+  x_label = "Week",
+  x_axis_tick_format = "%d %b"
+)
 fig
 ```
 
@@ -486,13 +495,14 @@ for (geslacht in levels(data_all$Geslacht)) {
 }
 
 # And apply the Rijksoverheid / RIVM theme, and accesibility features
-fig <- ro_ply_standard(fig,
-                      type = "linechart", 
-                      y_data = data_all$value,
-                      y_label = "Aantal cases",
-                      title = "COVID-19 cases per geslacht",
-                      x_label = "" #For the year, no x-axis title is needed
-                      )
+fig <- ro_ply_standard(
+  fig,
+  type = "linechart",
+  y_data = data_all$value,
+  y_label = "Aantal cases",
+  title = "COVID-19 cases per geslacht",
+  x_label = "" #For the year, no x-axis title is needed
+)
 fig
 ```
 

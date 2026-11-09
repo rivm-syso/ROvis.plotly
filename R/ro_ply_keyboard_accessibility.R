@@ -1538,7 +1538,7 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
 #' fig
 #' }
 ro_ply_keyboard_nav_linechart <- function(fig) {
-  fig2 <- htmlwidgets::onRender(
+  fig2 <- onRender(
     fig,
     "
     function(el, x) {

@@ -3,8 +3,10 @@
 #' This function applies a standardized RIVM theme and accessibility features to a given plotly figure object.
 #' It wraps several (internal) ROvis functions.
 #'
-#' @param fig A plotly figure object created by \code{plotly::plot_ly()} to which the styling and accesibility features will be added.
-#' @param type Type of chart for which to apply keyboard navigation. Options are "none", "barchart", "bargraph", "linechart", or "trendline". Default is "none".
+#' @param fig A plotly figure object created by \code{plotly::plot_ly()} to which the styling and
+#'   accesibility features will be added.
+#' @param type Type of chart for which to apply keyboard navigation. Options are "none", "barchart",
+#'   "bargraph", "linechart", or "trendline". Default is "none".
 #' @param barmode Bar mode for bar charts/graphs. Options are "vgroup" (default), "stack", or "overlay".
 #' @param base_family Font family for all text (default = "RijksoverheidSansWebText").
 #' @param title_color Color for the main title text.
