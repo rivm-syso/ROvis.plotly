@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/rivm-syso/ROvis.plotly/blob/v0.1.0/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/rivm-syso/ROvis.plotly/blob/main/DESCRIPTION)
 
 ROvis team (2026). *ROvis.plotly: Create interactive data visualisations
 in Rijksoverheid style using 'plotly'*. R package version 0.1.0,
