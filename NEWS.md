@@ -5,8 +5,9 @@
 - **Breaking:** `ro_ply_theme()` now takes the figure as its first argument and returns it
   styled, like `ro_gg_theme()`, `ro_gt_theme()` and `ro_e_theme()`, instead of returning a
   theme list. Replace `ro_ply_add_theme(fig, ro_ply_theme(...))` with `ro_ply_theme(fig, ...)`.
-- Removed the vignettes "plotly figures in Rijksoverheid style" and "ggplotly and plotly
-  keyboard accessibility"; the remaining vignette is built around `ro_ply_standard()`.
+- Replaced the vignettes "plotly figures in Rijksoverheid style" and "ggplotly and plotly
+  keyboard accessibility" with one vignette, "plotly in RO style", built around
+  `ro_ply_standard()`.
 
 ### :coffin: Deprecated
 

@@ -1,10 +1,10 @@
 ---
-title: "plotly figures in Rijksoverheid style"
+title: "plotly in RO style"
 format:
   html:
     tabset: TRUE
 vignette: >
-  %\VignetteIndexEntry{plotly figures in Rijksoverheid style}
+  %\VignetteIndexEntry{plotly in RO style}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
