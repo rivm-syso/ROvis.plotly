@@ -29,7 +29,6 @@ fig_dimmed
 }
 \seealso{
 Other plotly:
-\code{\link[=ro_ply_add_theme]{ro_ply_add_theme()}},
 \code{\link[=ro_ply_cursor]{ro_ply_cursor()}},
 \code{\link[=ro_ply_disable_toolbar]{ro_ply_disable_toolbar()}},
 \code{\link[=ro_ply_focus_linechart]{ro_ply_focus_linechart()}},
@@ -43,3 +42,4 @@ Other plotly:
 \code{\link[=ro_ply_title]{ro_ply_title()}}
 }
 \concept{plotly}
+\keyword{internal}

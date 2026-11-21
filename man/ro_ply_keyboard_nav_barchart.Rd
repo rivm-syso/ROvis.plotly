@@ -93,7 +93,6 @@ fig
 \code{\link{ro_ply_keyboard_nav_bargraph}}
 
 Other plotly:
-\code{\link[=ro_ply_add_theme]{ro_ply_add_theme()}},
 \code{\link[=ro_ply_cursor]{ro_ply_cursor()}},
 \code{\link[=ro_ply_dim]{ro_ply_dim()}},
 \code{\link[=ro_ply_disable_toolbar]{ro_ply_disable_toolbar()}},
@@ -116,3 +115,4 @@ Other ggplotly:
 }
 \concept{ggplotly}
 \concept{plotly}
+\keyword{internal}

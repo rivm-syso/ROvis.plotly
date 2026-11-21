@@ -41,6 +41,7 @@
 #' fig <- ro_ply_keyboard_nav_legend(fig)
 #' fig
 #' }
+#' @keywords internal
 ro_ply_keyboard_nav_legend <- function(fig) {
   fig2 <- onRender(
     fig,

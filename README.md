@@ -34,8 +34,9 @@ A version number ending in `.9000` is a development version.
 
 ## Usage
 
-A short example of on how to use the ro_ply_add_theme() function in combination with your plotly-object.
-For the full functionality, please see the vignettes.
+A short example of how to finish a plotly figure with `ro_ply_standard()`, which applies the
+RO style and all accessibility features. Use `ro_ply_theme()` instead if you only need the
+styling. For the full functionality, see the vignette.
 
 ```r
 bar_data <- tibble::tibble(
@@ -65,8 +66,8 @@ fig <- plot_ly(
   hoverinfo = "text"
 )
 
-# Apply Rijksoverheid / RIVM theme
-fig <- ro_ply_add_theme(fig, ro_ply_theme())
+# Apply the RO style and accessibility features
+fig <- ro_ply_standard(fig, type = "bargraph", title = "Aantal cases per geslacht")
 ```
 
 ## Support

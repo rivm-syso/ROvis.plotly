@@ -27,7 +27,6 @@ fig_styled
 }
 \seealso{
 Other plotly:
-\code{\link[=ro_ply_add_theme]{ro_ply_add_theme()}},
 \code{\link[=ro_ply_cursor]{ro_ply_cursor()}},
 \code{\link[=ro_ply_dim]{ro_ply_dim()}},
 \code{\link[=ro_ply_disable_toolbar]{ro_ply_disable_toolbar()}},
@@ -41,3 +40,4 @@ Other plotly:
 \code{\link[=ro_ply_title]{ro_ply_title()}}
 }
 \concept{plotly}
+\keyword{internal}

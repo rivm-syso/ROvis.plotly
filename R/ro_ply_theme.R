@@ -1,8 +1,14 @@
-#' RIVM Plotly Theme List
+#' Apply the RO style to a plotly figure
 #'
-#' Returns a standardized RIVM theme as a list for use with plotly charts,
-#' allowing customization of fonts, colors, grid, axis, legend, and tooltip styling.
+#' @description
+#' `ro_ply_theme()` applies the RO visual style (fonts, colors, grid, axes, legend
+#' and tooltip) to a plotly figure. It does not add accessibility features: use
+#' [ro_ply_standard()] for that, which is the recommended way to finish a plotly
+#' figure. Use `ro_ply_theme()` only when you need the styling alone, for example
+#' for a chart that `ro_ply_standard()` does not cover.
 #'
+#' @param fig A plotly figure object created by \code{plotly::plot_ly()} or
+#'   \code{plotly::ggplotly()}.
 #' @param base_family Font family for all text (default = "RijksoverheidSansWebText").
 #' @param title_color Color for the main title text.
 #' @param title_size Font size for the main title.
@@ -48,10 +54,11 @@
 #' @param tooltip_font_size Font size for tooltips.
 #' @family plotly
 #'
-#' @return A named list with plotly theming options, suitable for passing
-#' to \code{plotly::layout()} or as a theme in a plotly chart.
+#' @return The plotly figure with the RO styling applied.
 #'
+#' @seealso [ro_ply_standard()] for the styling plus all accessibility features.
 #'
+#' @export
 #' @examples
 #' \dontrun{
 #' # Example data: number of cases per age group and sex
@@ -67,9 +74,6 @@
 #'   "Vrouw" = ro_color("robijnrood"),
 #'   "Onbekend" = ro_color("donkergeel")
 #' )
-#'
-#' # Use ro_ply_theme with barmode = "stack"
-#' theme_rivm <- ro_ply_theme(barmode = "stack")
 #'
 #' # Create the plotly stacked bar chart
 #' fig <- plotly::plot_ly(
@@ -88,10 +92,11 @@
 #'   hoverinfo = "text"
 #' )
 #'
-#' fig <- ro_ply_add_theme(fig, theme_rivm)
+#' fig <- ro_ply_theme(fig, barmode = "stack")
 #' fig
 #' }
 ro_ply_theme <- function(
+  fig,
   barmode = "vgroup",
 
   #Font
@@ -276,5 +281,5 @@ ro_ply_theme <- function(
     bargap = 0.1,
     hovermode = "closest"
   )
-  return(rivm_theme)
+  do.call(layout, c(list(fig), rivm_theme))
 }

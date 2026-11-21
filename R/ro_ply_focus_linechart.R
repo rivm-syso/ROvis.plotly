@@ -22,6 +22,7 @@
 #'     })
 #'   }
 #' }
+#' @export
 ro_ply_focus_linechart <- function() {
   tags$head(
     tags$style(

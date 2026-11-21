@@ -80,6 +80,7 @@
 #' fig <- ro_ply_keyboard_nav_barchart(fig)
 #' fig
 #' }
+#' @keywords internal
 ro_ply_keyboard_nav_barchart <- function(fig) {
   # Add a java-script so that the tooltip is accessible with the keyboard
   fig2 <- onRender(
@@ -621,7 +622,7 @@ ro_ply_keyboard_nav_barchart <- function(fig) {
 #' fig <- ro_ply_keyboard_nav_bargraph(fig)
 #' fig
 #' }
-
+#' @keywords internal
 ro_ply_keyboard_nav_bargraph <- function(fig) {
   # Add a java-script so that the tooltip is accessible with the keyboard
   fig2 <- onRender(
@@ -1133,7 +1134,7 @@ ro_ply_keyboard_nav_bargraph <- function(fig) {
 #' fig <- ro_ply_keyboard_nav_trendline(fig)
 #' fig
 #' }
-
+#' @keywords internal
 ro_ply_keyboard_nav_trendline <- function(fig) {
   # Add custom Javascript to make the points and lines accessible with the keyboard
   fig2 <-
@@ -1533,6 +1534,7 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
 #' fig <- ro_ply_keyboard_nav_linechart(fig)
 #' fig
 #' }
+#' @keywords internal
 ro_ply_keyboard_nav_linechart <- function(fig) {
   fig2 <- onRender(
     fig,

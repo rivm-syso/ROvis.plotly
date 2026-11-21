@@ -58,6 +58,7 @@
 #' @param height Desired plot height in pixels. Default is 400.
 #'
 #' @returns The Plotly figure object with the custom styling applied and accesibility features applied.
+#' @seealso [ro_ply_theme()] for the styling only, without accessibility features.
 #' @export
 #'
 #' @examples
@@ -187,7 +188,8 @@ ro_ply_standard <- function(
   height = 400
 ) {
   # Theming functions
-  theme <- ro_ply_theme(
+  fig <- ro_ply_theme(
+    fig,
     barmode,
     base_family,
     title_color,
@@ -224,7 +226,6 @@ ro_ply_standard <- function(
     tooltip_background_color,
     tooltip_font_size
   )
-  fig <- ro_ply_add_theme(fig = fig, theme = theme)
   fig <- ro_ply_title(
     fig,
     y_data = y_data,

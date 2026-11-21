@@ -23,9 +23,13 @@ library(ROvis.utils)
 
 This vignette demonstrates how to create clear, publication-ready visualizations in R using the [plotly](https://plotly.com/r/) package, styled according to the Rijksoverheids style The provided functions allow you to quickly apply consistent fonts, colors, grid lines, axes, legends, tooltips, and annotation styling across all your Plotly charts.
 
-# Key Function
+# Key Functions
 
-- **`ro_ply_standard()`**  
+- **`ro_ply_standard()`**: applies the RO style and all accessibility features
+  (keyboard navigation, keyboard-accessible legend, no toolbar). Use this for every chart.
+- **`ro_ply_theme()`**: applies the RO style only, without accessibility features. Use it
+  only for charts that `ro_ply_standard()` doesn't cover (see
+  [Styling only](#styling-only)).
 
 
 # Code Examples
@@ -66,7 +70,6 @@ data <- dplyr::bind_rows(base_data, summary_data) |>
 
 
 # Then we make the basic plotly plot
-theme_rivm <- ro_ply_theme(barmode = "group")
 kleuren <- c(ro_color("hemelblauw"), ro_color("robijnrood"),  ro_color("paars"))
 
 fig <- plot_ly(
@@ -205,9 +208,8 @@ fig
 
 This example demonstrates how to create a stacked bar chart displays the number of cases per age group and sex.
 
-The theme uses:
-`theme_rivm <- ro_ply_theme(barmode = "stack")`
-where `barmode = "stack"` stacks the bars by sex within each age group.
+`ro_ply_standard()` uses `barmode = "stack"` to stack the bars by sex within each age
+group.
 
 ```{r example stacked bar graph}
 library(dplyr)
@@ -409,7 +411,7 @@ tab_cases_week_by_prov <- tibble::tibble(
 
 # Then we make the basic plotly plot
 prov_names <- unique(tab_cases_week_by_prov$Province)
-prov_colors <- setNames(theme_rivm$colorway[seq_along(prov_names)], prov_names)
+prov_colors <- setNames(c(ro_color("hemelblauw"), ro_color("donkergeel")), prov_names)
 
 fig <- plot_ly()
 for (prov in prov_names) {
@@ -506,3 +508,20 @@ fig <- ro_ply_standard(
 fig
 ```
 
+# Styling only
+
+For a chart that `ro_ply_standard()` doesn't cover (for example a subplot or a map), apply
+only the RO styling with `ro_ply_theme()`. It takes the figure and returns it styled, but it
+adds **no** accessibility features, so prefer `ro_ply_standard()` whenever you can.
+
+```{r example styling only}
+fig <- plot_ly(
+  data = data.frame(x = 1:10, y = c(3, 5, 4, 6, 8, 7, 9, 11, 10, 12)),
+  x = ~x,
+  y = ~y,
+  type = "scatter",
+  mode = "lines"
+)
+
+ro_ply_theme(fig)
+```

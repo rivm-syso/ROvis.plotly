@@ -15,6 +15,7 @@
 #' fig_styled <- ro_ply_legend_theme(fig)
 #' fig_styled
 #' }
+#' @keywords internal
 ro_ply_legend_theme <- function(fig) {
   # Add boxes around the legend items instead of the legend itself
   fig3 <- onRender(

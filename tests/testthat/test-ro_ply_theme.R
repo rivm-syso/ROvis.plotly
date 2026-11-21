@@ -1,10 +1,12 @@
-test_that("ro_ply_theme returns a correct theme list", {
+test_that("ro_ply_theme applies the theme to the figure", {
   # Minimal dummy color function if not loaded
   if (!exists("color")) {
     color <- function(color_name) "#123456"
   }
 
-  theme <- ro_ply_theme(
+  fig <- plotly::plot_ly(x = 1:3, y = 1:3, type = "bar")
+  themed <- ro_ply_theme(
+    fig,
     base_family = "Arial",
     title_color = "#ff0000",
     title_size = 20,
@@ -16,7 +18,8 @@ test_that("ro_ply_theme returns a correct theme list", {
     paper_bgcolor = "#f0f0f0"
   )
 
-  expect_type(theme, "list")
+  expect_s3_class(themed, "plotly")
+  theme <- themed$x$layoutAttrs[[length(themed$x$layoutAttrs)]]
   expect_true(all(
     c("title", "yaxis", "xaxis", "legend", "font", "plot_bgcolor", "paper_bgcolor", "colorway") %in% names(theme)
   ))
@@ -41,7 +44,9 @@ test_that("ro_ply_theme applies the font resolved by ro_check_if_font_available,
   local_mocked_bindings(
     ro_check_if_font_available = function(target_font_family) "Verdana"
   )
-  theme <- ro_ply_theme(base_family = "RijksoverheidSansWebText")
+  fig <- plotly::plot_ly(x = 1:3, y = 1:3, type = "bar")
+  themed <- ro_ply_theme(fig, base_family = "RijksoverheidSansWebText")
+  theme <- themed$x$layoutAttrs[[length(themed$x$layoutAttrs)]]
   expect_identical(theme$title$font$family, "Verdana")
   expect_identical(theme$font$family, "Verdana")
 })
