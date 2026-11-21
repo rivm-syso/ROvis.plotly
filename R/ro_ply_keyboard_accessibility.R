@@ -82,7 +82,9 @@
 #' }
 ro_ply_keyboard_nav_barchart <- function(fig) {
   # Add a java-script so that the tooltip is accessible with the keyboard
-  fig2 <- onRender(fig, "
+  fig2 <- onRender(
+    fig,
+    "
    function(el, x) {
      // Helper to hide Plotly hover label
      function hidePlotlyHoverlabel() {
@@ -558,10 +560,10 @@ ro_ply_keyboard_nav_barchart <- function(fig) {
       scrollParent = scrollParent.parentElement;
     }
    }
-   ")
+   "
+  )
 
   return(fig2)
-
 }
 
 
@@ -622,7 +624,9 @@ ro_ply_keyboard_nav_barchart <- function(fig) {
 
 ro_ply_keyboard_nav_bargraph <- function(fig) {
   # Add a java-script so that the tooltip is accessible with the keyboard
-  fig2 <- onRender(fig, "
+  fig2 <- onRender(
+    fig,
+    "
    function(el, x) {
      // Helper to hide Plotly hover label
      function hidePlotlyHoverlabel() {
@@ -1071,8 +1075,8 @@ ro_ply_keyboard_nav_bargraph <- function(fig) {
       }
     });
    }
-   ")
-
+   "
+  )
 
   return(fig2)
 }
@@ -1132,7 +1136,7 @@ ro_ply_keyboard_nav_bargraph <- function(fig) {
 
 ro_ply_keyboard_nav_trendline <- function(fig) {
   # Add custom Javascript to make the points and lines accessible with the keyboard
-  fig2  <-
+  fig2 <-
     onRender(
       fig,
       "
@@ -1530,7 +1534,7 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
 #' fig
 #' }
 ro_ply_keyboard_nav_linechart <- function(fig) {
-  fig2 <- htmlwidgets::onRender(
+  fig2 <- onRender(
     fig,
     "
     function(el, x) {
@@ -1900,5 +1904,3 @@ var trace = traceObj.trace;
 
   return(fig2)
 }
-
-

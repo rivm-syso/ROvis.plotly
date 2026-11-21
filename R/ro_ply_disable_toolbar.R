@@ -1,4 +1,3 @@
-
 #' Disable the plotly modebar (toolbar) and legend pop-up
 #'
 #' `r ROvis.utils::ro_group_badge('toegankelijkheid')`

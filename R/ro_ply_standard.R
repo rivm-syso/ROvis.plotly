@@ -1,11 +1,12 @@
-
 #' Apply styling and accesibility features to plotly figures
 #'
 #' This function applies a standardized RIVM theme and accessibility features to a given plotly figure object.
 #' It wraps several (internal) ROvis functions.
 #'
-#' @param fig A plotly figure object created by \code{plotly::plot_ly()} to which the styling and accesibility features will be added.
-#' @param type Type of chart for which to apply keyboard navigation. Options are "none", "barchart", "bargraph", "linechart", or "trendline". Default is "none".
+#' @param fig A plotly figure object created by \code{plotly::plot_ly()} to which the styling and
+#'   accesibility features will be added.
+#' @param type Type of chart for which to apply keyboard navigation. Options are "none", "barchart",
+#'   "bargraph", "linechart", or "trendline". Default is "none".
 #' @param barmode Bar mode for bar charts/graphs. Options are "vgroup" (default), "stack", or "overlay".
 #' @param base_family Font family for all text (default = "RijksoverheidSansWebText").
 #' @param title_color Color for the main title text.
@@ -108,97 +109,140 @@
 #'
 #'   fig
 #' }
-ro_ply_standard <- function(fig, type = c("none", "barchart", "bargraph", "linechart", "trendline"),
+ro_ply_standard <- function(
+  fig,
+  type = c("none", "barchart", "bargraph", "linechart", "trendline"),
 
-                           # parameters for ro_ply_theme
-                           barmode = "vgroup",
-                           #Font
-                           base_family = "RijksoverheidSansWebText",
-                           # Titles
-                           title_color = ro_color(color_name = "lintblauw"), # "#154273"
-                           title_size = 17,
-                           y_axis_title_size = 13,
-                           x_axis_title_size = 13,
-                           # Ticks and grids
-                           axis_tick_size = 12,
-                           axis_title_color = ro_color(color_name = "lintblauw"), # "#154273"
-                           axis_tick_color = ro_color(color_name = "grijs_7"), # "#535353"
-                           grid_color = ro_color(color_name = "grijs_3"), # "#cccccc"
-                           grid_width = 0.25,
-                           y_axis_showgrid = TRUE,
-                           x_axis_showgrid = FALSE,
-                           x_axis_tick_format = NULL, # For most barplots etc. no ticks
-                           y_axis_tick_format = ",.0f", #for thousand seperator as ,
-                           # Axis lines
-                           y_axis_showline = FALSE,
-                           x_axis_showline = TRUE,
-                           x_line_color = ro_color(color_name = "grijs_7"), # "#535353"
-                           y_line_color = ro_color(color_name = "lintblauw"), # "#154273"
-                           x_line_width = 1.5,
-                           y_line_width = 0,
-                           # Crosshair / Spikes
-                           y_axis_spike = FALSE,
-                           x_axis_spike = TRUE,
-                           cross_hair_color = "#535353",
-                           cross_hair_style = "dash",
-                           cross_hair_width = 1,
-                           # General color theming
-                           colorway = c(
-                             ro_color(color_name = "hemelblauw"),
-                             ro_color(color_name = "donkergeel"),
-                             ro_color(color_name = "robijnrood"),
-                             ro_color(color_name = "paars_tint90"),
-                             ro_color(color_name = "mintgroen_tint110"),
-                             ro_color(color_name = "oranje"),
-                             ro_color(color_name = "groen"),
-                             ro_color(color_name = "donkerbruin")
-                           ), #c("#007bc7", "#ffb612", "#ca005d", "#552c6f", "#6abda4", "#e17000", "#39870c", "#673327")
-                           # Legend
-                           legend_font_size = 13,
-                           legend_color = ro_color(color_name = "grijs_7"), # "#535353"
-                           # General theming
-                           plot_bgcolor = "#ffffff", #"#ffffff"
-                           paper_bgcolor = "#ffffff", #"#ffffff"
-                           # Tooltip
-                           tooltip_color = "#000000",
-                           tooltip_border_color = "#000000",
-                           tooltip_background_color = "#ffffff",
-                           tooltip_font_size = 13,
+  # parameters for ro_ply_theme
+  barmode = "vgroup",
+  #Font
+  base_family = "RijksoverheidSansWebText",
+  # Titles
+  title_color = ro_color(color_name = "lintblauw"), # "#154273"
+  title_size = 17,
+  y_axis_title_size = 13,
+  x_axis_title_size = 13,
+  # Ticks and grids
+  axis_tick_size = 12,
+  axis_title_color = ro_color(color_name = "lintblauw"), # "#154273"
+  axis_tick_color = ro_color(color_name = "grijs_7"), # "#535353"
+  grid_color = ro_color(color_name = "grijs_3"), # "#cccccc"
+  grid_width = 0.25,
+  y_axis_showgrid = TRUE,
+  x_axis_showgrid = FALSE,
+  x_axis_tick_format = NULL, # For most barplots etc. no ticks
+  y_axis_tick_format = ",.0f", #for thousand seperator as ,
+  # Axis lines
+  y_axis_showline = FALSE,
+  x_axis_showline = TRUE,
+  x_line_color = ro_color(color_name = "grijs_7"), # "#535353"
+  y_line_color = ro_color(color_name = "lintblauw"), # "#154273"
+  x_line_width = 1.5,
+  y_line_width = 0,
+  # Crosshair / Spikes
+  y_axis_spike = FALSE,
+  x_axis_spike = TRUE,
+  cross_hair_color = "#535353",
+  cross_hair_style = "dash",
+  cross_hair_width = 1,
+  # General color theming
+  colorway = c(
+    ro_color(color_name = "hemelblauw"),
+    ro_color(color_name = "donkergeel"),
+    ro_color(color_name = "robijnrood"),
+    ro_color(color_name = "paars_tint90"),
+    ro_color(color_name = "mintgroen_tint110"),
+    ro_color(color_name = "oranje"),
+    ro_color(color_name = "groen"),
+    ro_color(color_name = "donkerbruin")
+  ), #c("#007bc7", "#ffb612", "#ca005d", "#552c6f", "#6abda4", "#e17000", "#39870c", "#673327")
+  # Legend
+  legend_font_size = 13,
+  legend_color = ro_color(color_name = "grijs_7"), # "#535353"
+  # General theming
+  plot_bgcolor = "#ffffff", #"#ffffff"
+  paper_bgcolor = "#ffffff", #"#ffffff"
+  # Tooltip
+  tooltip_color = "#000000",
+  tooltip_border_color = "#000000",
+  tooltip_background_color = "#ffffff",
+  tooltip_font_size = 13,
 
+  # parameters for ro_ply_title
+  y_data = NULL,
+  y_label = NULL,
+  x_label = NULL,
+  title = NULL,
+  canvas_width = 776,
+  left_margin_base = 10,
+  char_width = 7, # Average size of characters for Ariasl
+  #title_size = 17, # RIVM theming
+  axis_title_size = 13, # RIVM theming
+  #title_color = ro_color(color_name = "lintblauw"), # "#154273" = RIVM theming
+  thousand_seperator = ".", # Dutch way of seperators
+  decimal_seperator = ",", # Dutch way of seperators
 
-                           # parameters for ro_ply_title
-                           y_data = NULL, y_label = NULL, x_label = NULL, title = NULL,
-                           canvas_width = 776,
-                           left_margin_base = 10,  char_width = 7, # Average size of characters for Ariasl
-                           #title_size = 17, # RIVM theming
-                           axis_title_size = 13, # RIVM theming
-                           #title_color = ro_color(color_name = "lintblauw"), # "#154273" = RIVM theming
-                           thousand_seperator = ".", # Dutch way of seperators
-                           decimal_seperator = ",", # Dutch way of seperators
-
-                           # parameters for ro_ply_dim
-                           width = 776, height = 400
-                           ){
-
+  # parameters for ro_ply_dim
+  width = 776,
+  height = 400
+) {
   # Theming functions
-  theme <- ro_ply_theme(barmode, base_family, title_color, title_size, y_axis_title_size, x_axis_title_size,
-                        axis_tick_size, axis_title_color, axis_tick_color, grid_color, grid_width,
-                        y_axis_showgrid, x_axis_showgrid, x_axis_tick_format, y_axis_tick_format,
-                        y_axis_showline, x_axis_showline, x_line_color, y_line_color, x_line_width,
-                        y_line_width, y_axis_spike, x_axis_spike, cross_hair_color, cross_hair_style,
-                        cross_hair_width, colorway, legend_font_size, legend_color,
-                        plot_bgcolor, paper_bgcolor,
-                        tooltip_color, tooltip_border_color, tooltip_background_color,
-                        tooltip_font_size)
+  theme <- ro_ply_theme(
+    barmode,
+    base_family,
+    title_color,
+    title_size,
+    y_axis_title_size,
+    x_axis_title_size,
+    axis_tick_size,
+    axis_title_color,
+    axis_tick_color,
+    grid_color,
+    grid_width,
+    y_axis_showgrid,
+    x_axis_showgrid,
+    x_axis_tick_format,
+    y_axis_tick_format,
+    y_axis_showline,
+    x_axis_showline,
+    x_line_color,
+    y_line_color,
+    x_line_width,
+    y_line_width,
+    y_axis_spike,
+    x_axis_spike,
+    cross_hair_color,
+    cross_hair_style,
+    cross_hair_width,
+    colorway,
+    legend_font_size,
+    legend_color,
+    plot_bgcolor,
+    paper_bgcolor,
+    tooltip_color,
+    tooltip_border_color,
+    tooltip_background_color,
+    tooltip_font_size
+  )
   fig <- ro_ply_add_theme(fig = fig, theme = theme)
-  fig <- ro_ply_title(fig, y_data = y_data, y_label = y_label, x_label = x_label, title = title,
-                      canvas_width = canvas_width, left_margin_base = left_margin_base, char_width = char_width,
-                      title_size = title_size, axis_title_size = axis_title_size, title_color = title_color,
-                      thousand_seperator = thousand_seperator, decimal_seperator = decimal_seperator)
+  fig <- ro_ply_title(
+    fig,
+    y_data = y_data,
+    y_label = y_label,
+    x_label = x_label,
+    title = title,
+    canvas_width = canvas_width,
+    left_margin_base = left_margin_base,
+    char_width = char_width,
+    title_size = title_size,
+    axis_title_size = axis_title_size,
+    title_color = title_color,
+    thousand_seperator = thousand_seperator,
+    decimal_seperator = decimal_seperator
+  )
   fig <- ro_ply_cursor(fig)
   fig <- ro_ply_legend_theme(fig)
   fig <- ro_ply_dim(fig, width = width, height = height)
-
 
   # Accessibility functions
   if (type == "barchart") {

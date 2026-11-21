@@ -1,4 +1,6 @@
-# ROvis.plotly v0.1.0
+# ROvis.plotly (development version)
+
+# ROvis.plotly 0.1.0
 
 First release since `ROvis.plotly` was split out of the `ROvis` monolith into its own
 package, and the repository moved from GitLab to GitHub.
