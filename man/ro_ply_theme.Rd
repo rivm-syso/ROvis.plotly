@@ -2,9 +2,10 @@
 % Please edit documentation in R/ro_ply_theme.R
 \name{ro_ply_theme}
 \alias{ro_ply_theme}
-\title{RIVM Plotly Theme List}
+\title{Apply the RO style to a plotly figure}
 \usage{
 ro_ply_theme(
+  fig,
   barmode = "vgroup",
   base_family = "RijksoverheidSansWebText",
   title_color = ro_color(color_name = "lintblauw"),
@@ -46,6 +47,9 @@ ro_ply_theme(
 )
 }
 \arguments{
+\item{fig}{A plotly figure object created by \code{plotly::plot_ly()} or
+\code{plotly::ggplotly()}.}
+
 \item{barmode}{Bar mode for bar charts. "vgroup" by default.}
 
 \item{base_family}{Font family for all text (default = "RijksoverheidSansWebText").}
@@ -125,12 +129,14 @@ for more information on time-formats see https://d3js.org/d3-time-format)}
 \item{tooltip_font_size}{Font size for tooltips.}
 }
 \value{
-A named list with plotly theming options, suitable for passing
-to \code{plotly::layout()} or as a theme in a plotly chart.
+The plotly figure with the RO styling applied.
 }
 \description{
-Returns a standardized RIVM theme as a list for use with plotly charts,
-allowing customization of fonts, colors, grid, axis, legend, and tooltip styling.
+\code{ro_ply_theme()} applies the RO visual style (fonts, colors, grid, axes, legend
+and tooltip) to a plotly figure. It does not add accessibility features: use
+\code{\link[=ro_ply_standard]{ro_ply_standard()}} for that, which is the recommended way to finish a plotly
+figure. Use \code{ro_ply_theme()} only when you need the styling alone, for example
+for a chart that \code{ro_ply_standard()} does not cover.
 }
 \examples{
 \dontrun{
@@ -147,9 +153,6 @@ sex_colors <- c(
   "Vrouw" = ro_color("robijnrood"),
   "Onbekend" = ro_color("donkergeel")
 )
-
-# Use ro_ply_theme with barmode = "stack"
-theme_rivm <- ro_ply_theme(barmode = "stack")
 
 # Create the plotly stacked bar chart
 fig <- plotly::plot_ly(
@@ -168,13 +171,14 @@ fig <- plotly::plot_ly(
   hoverinfo = "text"
 )
 
-fig <- ro_ply_add_theme(fig, theme_rivm)
+fig <- ro_ply_theme(fig, barmode = "stack")
 fig
 }
 }
 \seealso{
+\code{\link[=ro_ply_standard]{ro_ply_standard()}} for the styling plus all accessibility features.
+
 Other plotly:
-\code{\link[=ro_ply_add_theme]{ro_ply_add_theme()}},
 \code{\link[=ro_ply_cursor]{ro_ply_cursor()}},
 \code{\link[=ro_ply_dim]{ro_ply_dim()}},
 \code{\link[=ro_ply_disable_toolbar]{ro_ply_disable_toolbar()}},

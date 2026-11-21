@@ -10,7 +10,6 @@
 #'
 #' @return A \code{plotly} object with improved legend accessibility.
 #'
-#' @export
 #' @family ggplotly
 #' @family plotly
 #' @examples
@@ -42,6 +41,7 @@
 #' fig <- ro_ply_keyboard_nav_legend(fig)
 #' fig
 #' }
+#' @keywords internal
 ro_ply_keyboard_nav_legend <- function(fig) {
   fig2 <- onRender(
     fig,

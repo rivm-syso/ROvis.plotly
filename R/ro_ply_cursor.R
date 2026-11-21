@@ -5,7 +5,6 @@
 #' @param fig A Plotly figure object created by \code{plotly::plot_ly()} or similar.
 #'
 #' @return A Plotly figure object with the cursor style set to "default" (arrow).
-#' @export
 #' @family plotly
 #' @family ggplotly
 #' @examples
@@ -14,6 +13,7 @@
 #' fig_cursor <- ro_ply_cursor(fig)
 #' fig_cursor
 #' }
+#' @keywords internal
 ro_ply_cursor <- function(fig) {
   #The default of plotly is a cross, but a cursor is better
   fig <- onRender(

@@ -9,7 +9,6 @@
 #'
 #' @return A \code{plotly} object without the modebar and with improved legend accessibility.
 #'
-#' @export
 #' @family ggplotly
 #' @family plotly
 #' @examples
@@ -42,7 +41,7 @@
 #' fig <- ro_ply_disable_toolbar(fig)
 #' fig
 #' }
-
+#' @keywords internal
 ro_ply_disable_toolbar <- function(fig) {
   # Remove the modebar for a clean look, as it is not so accessible
   fig <- plotly::config(fig, displayModeBar = FALSE)

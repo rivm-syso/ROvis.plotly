@@ -21,7 +21,6 @@
 #' @family plotly
 #' @return The plotly figure object with added (and styled) title and/or axis labels as annotations.
 #'
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -35,6 +34,7 @@
 #' ro_ply_title(fig, y_data = data$'Number of Cases',
 #'   y_label = "Number of cases", title = "Fancy title", x_label = "groups")
 #' }
+#' @keywords internal
 ro_ply_title <- function(
   fig,
   y_data = NULL,

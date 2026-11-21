@@ -56,7 +56,6 @@ Other ggplotly:
 \code{\link[=ro_ply_keyboard_nav_trendline]{ro_ply_keyboard_nav_trendline()}}
 
 Other plotly:
-\code{\link[=ro_ply_add_theme]{ro_ply_add_theme()}},
 \code{\link[=ro_ply_cursor]{ro_ply_cursor()}},
 \code{\link[=ro_ply_dim]{ro_ply_dim()}},
 \code{\link[=ro_ply_disable_toolbar]{ro_ply_disable_toolbar()}},
@@ -71,3 +70,4 @@ Other plotly:
 }
 \concept{ggplotly}
 \concept{plotly}
+\keyword{internal}

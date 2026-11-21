@@ -9,7 +9,6 @@
 #'
 #' @return HTML code (using `tags$head` and `tags$style`) to be included in a Shiny UI.
 #' @family plotly
-#' @export
 #' @examples
 #' if (interactive()) {
 #'   ui <- fluidPage(
@@ -23,6 +22,7 @@
 #'     })
 #'   }
 #' }
+#' @export
 ro_ply_focus_linechart <- function() {
   tags$head(
     tags$style(

@@ -17,7 +17,6 @@
 #' @family ggplotly
 #' @return A \code{plotly} object with improved accessibility features for keyboard and screen reader users.
 #' @seealso \code{\link{ro_ply_keyboard_nav_bargraph}}
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -81,6 +80,7 @@
 #' fig <- ro_ply_keyboard_nav_barchart(fig)
 #' fig
 #' }
+#' @keywords internal
 ro_ply_keyboard_nav_barchart <- function(fig) {
   # Add a java-script so that the tooltip is accessible with the keyboard
   fig2 <- onRender(
@@ -598,7 +598,6 @@ ro_ply_keyboard_nav_barchart <- function(fig) {
 #' @return A \code{plotly} object with improved keyboard accessibility.
 #' @family ggplotly
 #' @family plotly
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -623,7 +622,7 @@ ro_ply_keyboard_nav_barchart <- function(fig) {
 #' fig <- ro_ply_keyboard_nav_bargraph(fig)
 #' fig
 #' }
-
+#' @keywords internal
 ro_ply_keyboard_nav_bargraph <- function(fig) {
   # Add a java-script so that the tooltip is accessible with the keyboard
   fig2 <- onRender(
@@ -1102,7 +1101,6 @@ ro_ply_keyboard_nav_bargraph <- function(fig) {
 #'
 #' @return A \code{plotly} object with improved keyboard accessibility.
 #'
-#' @export
 #' @family ggplotly
 #' @family plotly
 #' @examples
@@ -1136,7 +1134,7 @@ ro_ply_keyboard_nav_bargraph <- function(fig) {
 #' fig <- ro_ply_keyboard_nav_trendline(fig)
 #' fig
 #' }
-
+#' @keywords internal
 ro_ply_keyboard_nav_trendline <- function(fig) {
   # Add custom Javascript to make the points and lines accessible with the keyboard
   fig2 <-
@@ -1515,7 +1513,6 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
 #' @return A \code{plotly} object with improved keyboard accessibility for line charts.
 #' @family ggplotly
 #' @family plotly
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -1537,6 +1534,7 @@ ro_ply_keyboard_nav_trendline <- function(fig) {
 #' fig <- ro_ply_keyboard_nav_linechart(fig)
 #' fig
 #' }
+#' @keywords internal
 ro_ply_keyboard_nav_linechart <- function(fig) {
   fig2 <- onRender(
     fig,

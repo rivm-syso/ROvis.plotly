@@ -10,6 +10,15 @@
 
 Provides accessible, keyboard-navigable 'plotly' visualisations in Rijksoverheid style.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://rivm-syso.github.io/ROvis.plotly/}
+  \item \url{https://github.com/rivm-syso/ROvis.plotly}
+  \item Report bugs at \url{https://github.com/rivm-syso/ROvis.plotly/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: ROvis team \email{spin@rivm.nl}
 

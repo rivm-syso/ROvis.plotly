@@ -8,7 +8,6 @@
 #' @param height Desired plot height in pixels. Default is 400.
 #'
 #' @return A Plotly figure object with updated sizing policy and layout.
-#' @export
 #' @family plotly
 #' @examples
 #' \dontrun{
@@ -16,6 +15,7 @@
 #' fig_dimmed <- ro_ply_dim(fig, width = 800, height = 500)
 #' fig_dimmed
 #' }
+#' @keywords internal
 ro_ply_dim <- function(fig, width = 776, height = 400) {
   # Make sure the plot is the correct dimensions and ratio
   fig5 <- fig |>

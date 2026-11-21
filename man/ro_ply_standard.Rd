@@ -217,3 +217,6 @@ It wraps several (internal) ROvis functions.
   fig
 }
 }
+\seealso{
+\code{\link[=ro_ply_theme]{ro_ply_theme()}} for the styling only, without accessibility features.
+}

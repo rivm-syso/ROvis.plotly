@@ -7,7 +7,6 @@
 #' @param fig A Plotly figure object created by \code{plotly::plot_ly()} or similar.
 #'
 #' @return The Plotly figure object with the custom legend styling applied.
-#' @export
 #' @family plotly
 #' @examples
 #' \dontrun{
@@ -16,6 +15,7 @@
 #' fig_styled <- ro_ply_legend_theme(fig)
 #' fig_styled
 #' }
+#' @keywords internal
 ro_ply_legend_theme <- function(fig) {
   # Add boxes around the legend items instead of the legend itself
   fig3 <- onRender(
